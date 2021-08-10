@@ -1,2 +1,2 @@
-# tp_ing_web_grupo_7
-Tp Ing Web 2021
+# Trabajo práctico Ing. Web | Grupo 7 | Bitschin - Yacovino
+2021
