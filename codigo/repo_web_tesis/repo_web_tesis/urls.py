@@ -14,10 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from sitio import views # Arreglar esto, no detecta sitio como app, está configurado en urls
+from django.urls import path, include
 
 urlpatterns = [
+    # Admin urls
     path('admin/', admin.site.urls),
-    path('inicio/', views.inicio)
+
+    # Sitio urls
+    path('', include('sitio.urls'))
 ]
