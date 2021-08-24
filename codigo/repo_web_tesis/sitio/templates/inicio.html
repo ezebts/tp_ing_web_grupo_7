@@ -1,10 +1,27 @@
 {% extends "base.html" %}
 
+{% block title %} Inicio {% endblock %}
+
 {% block content %}
     <h1>
         Página principal
     </h1>
+
     <p>
         ¡Bienvenidos a la página principal!
     </p>
+
+    <div>
+        {% if user.is_authenticated %}
+            <a href="{% url 'perfil' %}">Mi perfil</a>
+            
+            {% if user.is_admin %}
+                <a href="{% url 'admin' %}">Administrar Sitio</a>
+            {% endif %}
+
+            <a href="{% url 'logout' %}">Cerrar sesión</a>
+        {% else %}
+            <a href="{% url 'login' %}">Ingresar</a>
+        {% endif %}
+    </div>
 {% endblock %}

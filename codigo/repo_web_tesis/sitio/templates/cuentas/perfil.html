@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+    <div>
+        <h1>Mi Perfil</h1>
+
+        <p>
+            Iniciaste sesión como: <span>{{ user.username }} &lt;{{ user.email }}&gt;</span>
+        </p>
+
+        <a href="{% url 'password_change' %}">Cambiar contraseña</a>
+
+        {% if user.is_admin %}
+            <a href="{% url 'admin' %}">Administrar Sitio</a>
+        {% endif %}
+
+        <a href="{% url 'inicio' %}">Ir al inicio</a>
+        <a href="{% url 'logout' %}">Cerrar sesión</a>
+    </div>
+{% endblock %}
