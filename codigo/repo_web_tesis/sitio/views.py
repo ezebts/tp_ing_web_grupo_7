@@ -13,17 +13,22 @@ def inicio(request):
 
 
 def registro(request):
-    if request.method == "GET":
-        return render(
-            request, "cuentas/registro.html",
-            {"form": RegisterUserForm}
-        )
-    elif request.method == "POST":
+    form = RegisterUserForm()
+
+    if request.method == "POST":
         form = RegisterUserForm(request.POST)
+
         if form.is_valid():
             user = form.save()
             login(request, user)
+
             return redirect(reverse("perfil"))
+
+    return render(
+        request,
+        "cuentas/registro.html",
+        {"form": form}
+    )
 
 
 @login_required
