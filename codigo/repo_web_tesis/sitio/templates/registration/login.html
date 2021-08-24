@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %} Ingresar {% endblock %}
+
+{% block content %}
+
+    <h2>Iniciar Sesión</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Login">
+    </form>
+
+    <a href="{% url 'registro' %}">No tengo cuenta</a>
+
+    <a href="{% url 'password_reset' %}">Recuperar contraseña</a>
+    
+    <a href="{% url 'inicio' %}">Ir al inicio</a>
+
+{% endblock %}
