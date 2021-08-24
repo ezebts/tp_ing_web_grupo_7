@@ -12,8 +12,8 @@
 
         <a href="{% url 'password_change' %}">Cambiar contraseña</a>
 
-        {% if user.is_admin %}
-            <a href="{% url 'admin' %}">Administrar Sitio</a>
+        {% if user.is_superuser %}
+            <a href="{% url 'admin:index' %}">Administrar Sitio</a>
         {% endif %}
 
         <a href="{% url 'inicio' %}">Ir al inicio</a>
