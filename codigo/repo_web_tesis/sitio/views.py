@@ -11,6 +11,8 @@ from .forms import RegisterUserForm
 def inicio(request):
     return render(request, 'inicio.html', {})
 
+def repositorio(request):
+    return render(request, 'repositorio.html', {})
 
 def registro(request):
     form = RegisterUserForm()
@@ -29,7 +31,6 @@ def registro(request):
         "cuentas/registro.html",
         {"form": form}
     )
-
 
 @login_required
 def pefil(request):

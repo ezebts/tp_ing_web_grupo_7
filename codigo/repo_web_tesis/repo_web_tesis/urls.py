@@ -30,5 +30,6 @@ urlpatterns = [
     # Sitio urls
     path('', views.inicio, name='inicio'),
     path('perfil/', views.pefil, name='perfil'),
-    path("registro/", views.registro, name="registro")
+    path("registro/", views.registro, name="registro"),
+    path('repositorio/', views.repositorio)
 ]
