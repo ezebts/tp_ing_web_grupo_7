@@ -143,6 +143,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Load local configuration
 try:
-    from .local_settings import *
+    from .settings import *
 except ImportError as error:
     pass

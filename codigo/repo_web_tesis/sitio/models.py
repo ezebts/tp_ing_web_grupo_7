@@ -37,13 +37,13 @@ class Comentario(models.Model):
 
 class Publicacion(models.Model):
     autores = models.ManyToManyField(Autor) # Un autor tiene muchas publicaciones y una publicacion muchos autores
-    comentarios = models.ForeignKey(Comentario, on_delete=CASCADE) # Una publicacion tiene muchos comentarios
+    comentarios = models.ForeignKey(Comentario, on_delete=CASCADE, null=True) # Una publicacion tiene muchos comentarios
     fecha_creacion = models.DateField()
-    titulo = models.CharField(max_length=30)
+    titulo = models.CharField(max_length=50)
     resumen = models.CharField(max_length=100)
-    vistas = models.IntegerField()
-    archivo = models.FileField()
-    imagen = models.ImageField()
+    vistas = models.IntegerField(null=True)
+    archivo = models.FileField(null=True)
+    imagen = models.ImageField(null=True)
 
 
 # Investigar clase Manager para administrar las instancias de todos las clases.

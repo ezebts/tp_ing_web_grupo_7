@@ -2,12 +2,10 @@ from django.contrib.auth import login
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 
-from .forms import RegisterUserForm
+from .forms import RegisterPublicacionForm, RegisterUserForm
 
 
 # Create your views here.
-
-
 def inicio(request):
     return render(request, 'inicio.html', {})
 
@@ -31,6 +29,19 @@ def registro(request):
         "cuentas/registro.html",
         {"form": form}
     )
+
+
+def publicar(request):
+    if request.method == 'POST':
+        form = RegisterPublicacionForm(request.POST)
+
+        if form.is_valid():
+            publi = form.save()
+    else:
+        form = RegisterPublicacionForm()
+    
+    return render(request, 'publicar.html', {"form": form})
+
 
 @login_required
 def pefil(request):

@@ -31,5 +31,6 @@ urlpatterns = [
     path('', views.inicio, name='inicio'),
     path('perfil/', views.pefil, name='perfil'),
     path("registro/", views.registro, name="registro"),
-    path('repositorio/', views.repositorio)
+    path('repositorio/', views.repositorio, name='repo'),
+    path('repositorio/publicar', views.publicar, name='publicar'),
 ]
