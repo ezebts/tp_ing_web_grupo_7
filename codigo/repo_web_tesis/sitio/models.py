@@ -5,6 +5,7 @@ from django.dispatch import Signal
 
 
 
+
 from repo_web_tesis import helpers
 
 # Create your models here.
@@ -37,15 +38,13 @@ class Comentario(models.Model):
 
 class Publicacion(models.Model):
     autores = models.ManyToManyField(Autor) # Un autor tiene muchas publicaciones y una publicacion muchos autores
-    comentarios = models.ForeignKey(Comentario, on_delete=CASCADE, null=True) # Una publicacion tiene muchos comentarios
+    comentarios = models.ForeignKey(Comentario, on_delete=CASCADE, null=True, blank=True) # Una publicacion tiene muchos comentarios
     fecha_creacion = models.DateField()
     titulo = models.CharField(max_length=50)
     resumen = models.CharField(max_length=100)
-    vistas = models.IntegerField(null=True)
-    archivo = models.FileField(null=True)
-    imagen = models.ImageField(null=True)
+    vistas = models.IntegerField(default=0)
+    archivo = models.FileField(upload_to='')
+    imagen = models.FileField(upload_to='')
 
-
-# Investigar clase Manager para administrar las instancias de todos las clases.
 
 

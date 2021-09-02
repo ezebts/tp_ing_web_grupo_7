@@ -7,6 +7,12 @@
         Trabajos de investigacion UCSE DAR
     </h1>
 
+    {% for publicacion in publicaciones %}
+        <h1>{{ publicacion.titulo }} {{ publicacion.fecha_creacion }}</h1>
+        <p>{{ publicacion.resumen }} </p>
+    {% endfor %}
+
+
     <div>
         <a href="{% url 'publicar' %}"> Crear nueva publicacion!</a>
     </div>

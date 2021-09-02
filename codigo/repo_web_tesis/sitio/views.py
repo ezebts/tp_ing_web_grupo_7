@@ -1,3 +1,4 @@
+from .models import Publicacion
 from django.contrib.auth import login
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
@@ -10,7 +11,8 @@ def inicio(request):
     return render(request, 'inicio.html', {})
 
 def repositorio(request):
-    return render(request, 'repositorio.html', {})
+    publicaciones = Publicacion.objects.all()
+    return render(request, 'repositorio.html', {'publicaciones':publicaciones})
 
 def registro(request):
     form = RegisterUserForm()
@@ -31,9 +33,9 @@ def registro(request):
     )
 
 
-def publicar(request):
+def publicar(request): # Problema para cargar los archivos
     if request.method == 'POST':
-        form = RegisterPublicacionForm(request.POST)
+        form = RegisterPublicacionForm(request.POST, request.FILES)
 
         if form.is_valid():
             publi = form.save()

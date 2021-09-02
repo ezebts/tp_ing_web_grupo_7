@@ -20,4 +20,4 @@ class RegisterUserForm(UserCreationForm):
 class RegisterPublicacionForm(ModelForm):
     class Meta:
         model = Publicacion
-        fields = ['titulo', 'resumen', 'fecha_creacion']
+        fields = ['titulo', 'resumen', 'fecha_creacion', 'imagen', 'archivo']
