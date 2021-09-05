@@ -44,6 +44,16 @@ def publicar(request): # Problema para cargar los archivos
     
     return render(request, 'publicar.html', {"form": form})
 
+def publicacion(request):
+    if request.method == 'GET':
+        id = request.GET['id']
+        publicacion = Publicacion.objects.get(pk=id)
+
+    return render(request, 'publicacion.html', {'publicacion': publicacion})
+
+
+
+
 
 @login_required
 def pefil(request):
