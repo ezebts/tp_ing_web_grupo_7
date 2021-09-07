@@ -8,7 +8,7 @@
     </h1>
 
     {% for publicacion in publicaciones %}
-        <h1>{{ publicacion.titulo }}  {{ publicacion.fecha_creacion }}</h1>
+        <h1>"{{ publicacion.titulo }}"  {{ publicacion.fecha_creacion }}</h1>
         <p>{{ publicacion.resumen }} </p>
         <div>
             <a href="{% url 'publicacion' %}?id={{publicacion.id|urlencode}}">Ver</a>

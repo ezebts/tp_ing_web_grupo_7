@@ -32,19 +32,18 @@ class Autor(models.Model):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=30)
     
-class Comentario(models.Model):
-    texto = models.CharField(max_length=100)
-    archivo = models.FileField()
 
 class Publicacion(models.Model):
     autores = models.ManyToManyField(Autor) # Un autor tiene muchas publicaciones y una publicacion muchos autores
-    comentarios = models.ForeignKey(Comentario, on_delete=CASCADE, null=True, blank=True) # Una publicacion tiene muchos comentarios
     fecha_creacion = models.DateField()
-    titulo = models.CharField(max_length=50)
-    resumen = models.CharField(max_length=100)
+    titulo = models.CharField(max_length=100)
+    resumen = models.CharField(max_length=300)
     vistas = models.IntegerField(default=0)
     archivo = models.FileField(upload_to='')
     imagen = models.FileField(upload_to='')
 
 
-
+class Comentario(models.Model):
+    texto = models.CharField(max_length=100)
+    archivo = models.FileField(upload_to='', blank=True)
+    publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE,)

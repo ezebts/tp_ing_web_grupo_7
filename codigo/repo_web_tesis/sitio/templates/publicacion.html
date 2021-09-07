@@ -4,11 +4,20 @@
 
 {% block content %}
 
-    <h1>Publicacion "{{publicacion.titulo}}"</h1>
+    <h1>Títitulo: "{{publicacion.titulo}}" por: {% for a in autores %} <h1>{{a.nombre}} {{a.apellido}}</h1> {% endfor %}</h1>
 
     <!--<p>Autores del trabajo: {{publicacion.autores.nombre}} </p>-->
 
     <p>Resumen: {{publicacion.resumen}}</p>
+    <p>Fecha de subida: {{publicacion.fecha_creacion}}</p>
+
+
+    <h1>Comentarios</h1>
+    {% for com in comentarios %}
+
+        <p>{{com.texto}}</p>
+
+    {% endfor %}
 
 
 {% endblock %}

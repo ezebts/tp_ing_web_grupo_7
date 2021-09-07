@@ -1,4 +1,4 @@
-from .models import Publicacion
+from .models import Comentario, Publicacion, Autor
 from django.contrib.auth import login
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
@@ -49,7 +49,13 @@ def publicacion(request):
         id = request.GET['id']
         publicacion = Publicacion.objects.get(pk=id)
 
-    return render(request, 'publicacion.html', {'publicacion': publicacion})
+        comentarios = Comentario.objects.filter(publicacion=id)
+
+        autores = Autor.objects.filter(publicacion=id)
+
+    return render(request, 'publicacion.html', {'publicacion': publicacion,
+                                                'comentarios': comentarios,
+                                                'autores'    : autores,    })
 
 
 
