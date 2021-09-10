@@ -39,8 +39,8 @@ class Publicacion(models.Model):
     titulo = models.CharField(max_length=100)
     resumen = models.CharField(max_length=300)
     vistas = models.IntegerField(default=0)
-    archivo = models.FileField(upload_to='')
-    imagen = models.FileField(upload_to='')
+    archivo = models.FileField(upload_to='', blank=True)
+    imagen = models.FileField(upload_to='', blank=True)
 
 
 class Comentario(models.Model):
