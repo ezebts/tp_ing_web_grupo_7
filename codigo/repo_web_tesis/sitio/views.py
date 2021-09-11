@@ -22,9 +22,10 @@ def registro(request):
 
         if form.is_valid():
             user = form.save()
-            login(request, user)
 
-            return redirect(reverse(settings.REGISTER_REDIRECT_URL))
+            if user:
+                login(request, user)
+                return redirect(reverse(settings.REGISTER_REDIRECT_URL))
 
     return render(
         request,

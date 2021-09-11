@@ -24,6 +24,7 @@ class RegisterUserForm(UserCreationForm):
             try:
                 usuario_data = create_edit_usuario(usuario_data)
             except ValidationError as error:
+                usuario_data = None
                 self.add_error(error.code, error.message)
 
         return usuario_data
