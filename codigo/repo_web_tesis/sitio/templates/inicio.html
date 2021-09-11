@@ -1,27 +1,106 @@
 {% extends "base.html" %}
+{% load utils %}
+{% load static %}
 
 {% block title %} Inicio {% endblock %}
 
 {% block content %}
-    <h1>
-        Página principal
-    </h1>
+    <MaterialUI.Box pt={15}>
+        <MaterialUI.Grid container>
+            <MaterialUI.Grid item xs={12} md={2} lg={2}></MaterialUI.Grid>
 
-    <p>
-        ¡Bienvenidos a la página principal!
-    </p>
+            <MaterialUI.Grid item xs={12} md={4} lg={2}>
+                    <MaterialUI.Paper elevation={1}>
+                        <MaterialUI.Box p={2} pb={1} pt={3}>
+                            <MaterialUI.Grid container>
+                                <MaterialUI.Grid item xs={12}>
+                                    {% if user.is_authenticated %}
+                                        <div style={ { float: 'left', marginLeft: '.6rem', marginRight: '.5rem' } }>
+                                            <ImageInput
+                                                height={46}
+                                                width={46}
+                                                csrf="{{ csrf_token }}"
+                                                placeholderLoad="{% static 'img/cameraHolder.png' %}"
+                                                placeholderShow="{% static '' %}"
+                                                uploadto="{% url 'actualizar_foto' %}"
+                                                next="inicio"
+                                                src="{% if user.imagen %}{{ user.imagen.url }}{% endif %}"
+                                            ></ImageInput>
+                                        </div>
 
-    <div>
-        {% if user.is_authenticated %}
-            <a href="{% url 'perfil' %}">Mi perfil</a>
-            
-            {% if user.is_superuser %}
-                <a href="{% url 'admin:index' %}">Administrar Sitio</a>
-            {% endif %}
+                                        <MaterialUI.Typography component="span">
+                                            <p style={ {marginBottom:8} }><span style={ { fontWeight: 'bold' } }>@{{ user.username }}</span></p>
+                                        </MaterialUI.Typography>
 
-            <a href="{% url 'logout' %}">Cerrar sesión</a>
-        {% else %}
-            <a href="{% url 'login' %}">Ingresar</a>
-        {% endif %}
-    </div>
+                                        <MaterialUI.MenuList>
+                                            <MaterialUI.MenuItem component={MaterialUI.Link} href="{% url 'perfil' %}">Mi Perfil</MaterialUI.MenuItem>
+                                            
+                                            {% if user.is_superuser %}
+                                                <MaterialUI.MenuItem component={MaterialUI.Link} href="{% url 'admin:index' %}">Administrar Sitio</MaterialUI.MenuItem>
+                                            {% endif %}
+
+                                            <MaterialUI.MenuItem style={ {color: 'red'} } component={MaterialUI.Link} href="{% url 'logout' %}">
+                                                <MaterialUI.Icon style={ {color: 'red', marginRight: 7} }>logout</MaterialUI.Icon>
+                                                Logout
+                                            </MaterialUI.MenuItem>
+                                        </MaterialUI.MenuList>
+                                    {% else %}
+                                        <MaterialUI.Typography component="span" align="center">
+                                            <p style={ {fontWeight: 'bold'} }>¡Ingresá y empezá a contribuir!</p>
+                                        </MaterialUI.Typography>
+                                        <MaterialUI.Button style={ { width:'100%', marginBottom: 10 } } variant="outlined" color="default" href="{% url 'login' %}">
+                                            <MaterialUI.Icon style={ { marginRight: '6px' } }>login</MaterialUI.Icon>
+                                            Ingresar
+                                        </MaterialUI.Button>
+                                    {% endif %}
+                                </MaterialUI.Grid>
+
+                                <MaterialUI.Grid item xs={12}>
+                                    <MaterialUI.Button 
+                                        startIcon={(<MaterialUI.Icon>add</MaterialUI.Icon>)}
+                                        style={ {width:'100%'} } 
+                                        variant="outlined" 
+                                        color="primary" 
+                                        href="{% url 'publicar' %}">
+                                        PUBLICAR
+                                    </MaterialUI.Button>
+                                </MaterialUI.Grid>
+                            </MaterialUI.Grid>
+                        </MaterialUI.Box>
+                    </MaterialUI.Paper>
+            </MaterialUI.Grid>
+
+            <MaterialUI.Grid item xs={12} md={4} style={ { overflowY: 'auto', overflowX: 'hidden', maxHeight: '90vh', paddingLeft: 40, paddingRight: 20 } }>
+                <MaterialUI.Grid container>
+                    {% if publicaciones.count %}
+                        {% for publicacion in publicaciones %}
+                            <MaterialUI.Grid xs={12} item style={ { marginBottom: '2.5em' } }>
+                                <PublicacionCard
+                                    autores={ {{ publicacion.autores.all|json }} }
+                                    titulo="{{ publicacion.titulo }}"
+                                    fecha="{{ publicacion.fecha_creacion }}"
+                                    resumen="{{ publicacion.resumen }}"
+                                    ver="{% url 'publicacion' %}?id={{publicacion.id|urlencode}}"
+                                    imagen="{{ publicacion.imagen.url }}"
+                                ></PublicacionCard>
+                            </MaterialUI.Grid>
+                        {% endfor %}
+                    {% else %}
+                        <MaterialUI.Grid xs={12} item style={ { marginBottom: '2.5em' } }>
+                            <PublicacionCard
+                                resumenTitle="Oh, ¡parece que aún no hay investigaciones publicadas!"
+                                resumen="¡Contribuí a una gran comunidad en crecimiento aportando nuevo conocimiento!"
+                                ver="{% url 'publicar' %}"
+                                imagen="{% static 'img/content_placeholder.png' %}"
+                            ></PublicacionCard>
+                        </MaterialUI.Grid>
+                    {% endif %}
+                </MaterialUI.Grid>
+
+                <GoUpButton anchor="#publicaciones"></GoUpButton>
+            </MaterialUI.Grid>
+
+            <MaterialUI.Grid xs={12} lg={4} item></MaterialUI.Grid>
+        </MaterialUI.Grid>
+    </MaterialUI.Box>
 {% endblock %}

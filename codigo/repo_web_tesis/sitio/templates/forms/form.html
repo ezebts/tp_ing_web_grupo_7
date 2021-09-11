@@ -1,0 +1,84 @@
+{% load utils %}
+
+<form method="{{ method }}" action="{{ action }}">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+    <MaterialUI.Grid
+        container
+        className="gridContainer"
+        direction="row"
+        justifyContent="center"
+        alignItems="center">
+
+            {% for field in form %}
+                <MaterialUI.Grid item className="gridItem space-sm" xs={12}>
+
+                    {% if field|field_type in 'TextInput,PasswordInput,EmailInput' %}
+                        {% if field|field_type == 'PasswordInput' %}
+                            <PasswordField
+                                InputProps={{
+                                    {% if field.errors %}
+                                        error: true,
+                                        helperText:"{{ field.errors.0 }}",
+                                    {% endif %}
+                                    id: "{{ field.id_for_label }}",
+                                    name: "{{ field.html_name }}",
+                                    label: "{{ field.label }}",
+                                    variant: "outlined",
+                                    defaultValue:"{{ field.value|default:'' }}",
+                                    className: "stretch",
+                                    placeholder: "{{ field|field_attrs|get_key:'placeholder' }}",
+                                    type: "text",
+
+                                    {% if field.field.required %}
+                                        required: true
+                                    {% endif %}
+                                }}
+                            ></PasswordField>
+                        {% else %}
+                            <MaterialUI.TextField
+                                {% if field.errors %}
+                                    error 
+                                    helperText="{{ field.errors.0 }}"
+                                {% endif %}
+                                id="{{ field.id_for_label }}"
+                                name="{{ field.html_name }}"
+                                label="{{ field.label }}"
+                                variant="outlined"
+                                defaultValue="{{ field.value|default:'' }}"
+                                className="stretch"
+                                placeholder="{{ field|field_attrs|get_key:'placeholder' }}"
+                                type="text"
+                                {% if field.field.required %}
+                                    required
+                                {% endif %}
+                            ></MaterialUI.TextField>
+                        {% endif %}
+                    {% endif %}
+
+                    <MaterialUI.Grid item xs={12} className="gridItem errorlist {% if not forloop.last %} space {% else %} space-sm {% endif %}">
+                        <MaterialUI.Typography variant="caption" component="span">
+                            {% for error in field.errors|slice:"1:" %}
+                                <p className="form-error">{{ error }}</p>
+                            {% endfor %}
+                        </MaterialUI.Typography>
+                    </MaterialUI.Grid>
+
+                </MaterialUI.Grid>
+            {% endfor %}
+
+            <MaterialUI.Grid item xs={12} className="gridItem errorlist space-sm">
+                <MaterialUI.Typography variant="body2" component="span">
+                    {% for error in form.non_field_errors  %}
+                        <p className="form-error">{{ error }}</p>
+                    {% endfor %}
+                </MaterialUI.Typography>
+            </MaterialUI.Grid>
+
+            <MaterialUI.Grid item xs={12} className="gridItem space-sm">
+                <MaterialUI.Button variant="outlined" color="primary" type="submit" value="{{ submit }}" disableElevation>
+                    {{ submit }}
+                </MaterialUI.Button>
+            </MaterialUI.Grid>
+            
+    </MaterialUI.Grid>
+</form>

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %} Publicacion {% endblock %}
+
+{% block content %}
+
+    <h1>Títitulo: "{{publicacion.titulo}}" {% for a in autores %} <h1>Por:{{a.nombre}} {{a.apellido}}</h1> {% endfor %}</h1>
+
+    <p>Resumen: {{publicacion.resumen}}</p>
+    <p>Fecha de subida: {{publicacion.fecha_creacion}}</p>
+
+
+    <h1>Comentarios</h1>
+    {% for com in comentarios %}
+
+        <p>{{com.texto}}</p>
+
+    {% endfor %}
+
+
+{% endblock %}
