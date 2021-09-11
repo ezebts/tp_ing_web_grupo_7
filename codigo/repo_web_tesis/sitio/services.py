@@ -63,16 +63,18 @@ def confirm_usuario(usuario, **kwargs):
 
 
 def verify_usuario(usuario, sign, token):
+    verified = False
     usuario_id = user_activation_tokens.decode_sign(sign)
 
-    if str(usuario.pk) != usuario_id:
+    if usuario:
+        if str(usuario.pk) == usuario_id:
+            if usuario.estado == ESTADOS_USUARIO.NO_VERIFICADO:
+                if user_activation_tokens.check_token(usuario, token):
+                    verified = True
+                    usuario.estado = ESTADOS_USUARIO.VERIFICADO
+                    usuario.save()
+
+    if not verified:
         usuario = None
-
-    if usuario and usuario.estado == ESTADOS_USUARIO.NO_VERIFICADO:
-        if user_activation_tokens.check_token(usuario, token):
-            usuario.estado = ESTADOS_USUARIO.VERIFICADO
-            usuario.save()
-
-    usuario = None
 
     return usuario
