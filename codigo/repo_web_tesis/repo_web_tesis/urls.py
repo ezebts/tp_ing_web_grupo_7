@@ -38,10 +38,5 @@ urlpatterns = [
     path('repositorio/publicacion', views.publicacion, name='publicacion'),
     path('registro/confirmar-email/<uid>/<token>',
          views.confirmar_email, name='confirmar_email')
-]
 
-if settings.DEBUG:
-    urlpatterns += static(
-        settings.MEDIA_URL,
-        document_root=settings.MEDIA_ROOT
-    )
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
