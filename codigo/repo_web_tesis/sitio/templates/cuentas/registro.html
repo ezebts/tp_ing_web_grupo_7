@@ -3,16 +3,31 @@
 {% block title %} Registrarme {% endblock %}
 
 {% block content %}
+        <MaterialUI.Grid container>
+            <MaterialUI.Grid xs={12} md={4} item></MaterialUI.Grid>
 
-<h2>Registrarme</h2>
+            <MaterialUI.Grid xs={12} md={4} style={ { marginTop: 6 + 'em', zIndex: '1' } } item>
+                <MaterialUI.Paper elevation={3} style={ { padding: '2em 2em' } } className="panel rounded">
+                    <MaterialUI.Grid container>
+                        <MaterialUI.Grid xs={12} item>
+                            <MaterialUI.Typography align='center' component='div'>
+                                <h2>Registrarse</h2>
+                            </MaterialUI.Typography>
+                        </MaterialUI.Grid>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Registrarme">
-</form>
+                        <MaterialUI.Grid xs={12} item>
+                            {% include 'forms/form.html' with submit="REGISTRARSE" method="POST" %}
+                        </MaterialUI.Grid>
+                        
+                        <MaterialUI.Grid xs={12} md={10} item>
+                            <MaterialUI.Typography align='left' component='div' style={ { paddingTop: '0', paddingLeft: '.25em' } }>
+                                <a href="{% url 'login' %}" className="link clear-sides">Ya tengo cuenta</a>
+                            </MaterialUI.Typography>
+                        </MaterialUI.Grid>
+                    </MaterialUI.Grid>
+                </MaterialUI.Paper>
+            </MaterialUI.Grid>
 
-<a href="{% url 'login' %}">Ya tengo cuenta</a>
-<a href="{% url 'inicio' %}">Ir al inicio</a>
-
+            <MaterialUI.Grid xs={12} md={4} item></MaterialUI.Grid>
+        </MaterialUI.Grid>
 {% endblock %}

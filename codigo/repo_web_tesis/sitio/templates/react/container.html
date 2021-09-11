@@ -1,0 +1,40 @@
+<!-- Init React App -->
+<script type="text/babel">
+    let html;
+    const selector = "{{ content_selector }}";
+    const htmlElement = document.querySelector(selector);
+    const mountPoint = document.querySelector('{{ mount_point_selector }}');
+
+    if (!htmlElement) throw `Elemento no encontrado '${ selector }'`;
+
+    if (htmlElement.content) {
+        let tempHandler = document.createElement('div');
+        tempHandler.append(htmlElement.content.cloneNode(true));
+        html = tempHandler.getInnerHTML();
+    } else {
+        html = htmlElement.getInnerHTML();
+    }
+
+    const jsx = Babel.transform(
+        `<div className='react-container'>${ html }</div>`,
+        {
+            presets: [Babel.availablePresets.react]
+        }
+    );
+
+    // Cargar contenido JSX
+    const content = eval(jsx.code);
+
+    // Try lock screen
+    screen.orientation
+        .lock('portrait')
+        .catch((err) => { })
+        .finally(() => {
+            // Montar app en contenedor principal
+            ReactDOM.render(content, mountPoint);
+
+            if (htmlElement !== mountPoint) {
+                htmlElement.remove();
+            }
+        });
+</script>

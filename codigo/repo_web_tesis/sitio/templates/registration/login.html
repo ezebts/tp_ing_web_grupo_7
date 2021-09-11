@@ -1,21 +1,61 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %} Ingresar {% endblock %}
 
 {% block content %}
-
-    <h2>Iniciar Sesión</h2>
-
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Login">
-    </form>
-
-    <a href="{% url 'registro' %}">No tengo cuenta</a>
-
-    <a href="{% url 'password_reset' %}">Recuperar contraseña</a>
+    <MaterialUI.Box 
+    style={ { backgroundImage: "url('{% static "/img/books.jpg" %}')" } }
+    className="background mask"></MaterialUI.Box>
     
-    <a href="{% url 'inicio' %}">Ir al inicio</a>
+    <MaterialUI.Grid container>
+        
+        <MaterialUI.Grid xs={12} md={8} item>
+            <MaterialUI.Grid container style={ { padding: '2em' } }>
+                <MaterialUI.Grid xs={12} md={2} item></MaterialUI.Grid>
+                <MaterialUI.Grid xs={12} md={10} item>
+                    <MaterialUI.Typography variant="h4" align='left' style={ {color:'white', marginTop: '2em'} } component="div">
+                        <h1>Ingresá para explorar mas</h1>
+                    </MaterialUI.Typography>
+                </MaterialUI.Grid>
+                
+                <MaterialUI.Grid xs={12} md={2} item></MaterialUI.Grid>
+                <MaterialUI.Grid xs={12} md={9} item>
+                    <MaterialUI.Typography variant="subtitle2" align='left' style={ { color:'white' } } component="div">
+                        <h1 style={ { margin: '0' } }>Sumate a una gran comunidad académica en crecimiento y accedé a todo tipo de conocimientos</h1>
+                    </MaterialUI.Typography>
+                    <MaterialUI.Button variant="outlined" href="{% url 'inicio' %}" className="white" style={ {marginTop: '2em'} } disableElevation>
+                        VER PUBLICACIONES
+                    </MaterialUI.Button>
+                </MaterialUI.Grid>
+                <MaterialUI.Grid xs={12} md={1} item></MaterialUI.Grid>
+            </MaterialUI.Grid>
+        </MaterialUI.Grid>
+
+        <MaterialUI.Grid xs={12} md={3} style={ { marginTop: 6 + 'em', zIndex: '1' } } item>
+            <MaterialUI.Paper elevation={3} style={ { padding: '2em 2em' } } className="panel rounded">
+                <MaterialUI.Grid container>
+                    <MaterialUI.Grid xs={12} item>
+                        <MaterialUI.Typography align='center' component='div'>
+                            <h2>Iniciar Sesión</h2>
+                        </MaterialUI.Typography>
+                    </MaterialUI.Grid>
+
+                    <MaterialUI.Grid xs={12} item>
+                        {% include 'forms/form.html' with submit="INGRESAR" method="POST" %}
+                    </MaterialUI.Grid>
+                    
+                    <MaterialUI.Grid xs={12} md={10} item>
+                        <MaterialUI.Typography align='left' component='div' style={ { paddingTop: '0', paddingLeft: '.25em' } }>
+                            <a href="{% url 'registro' %}" className="link clear-sides">No tengo cuenta</a>
+                            <a href="{% url 'password_reset' %}" className="link clear-sides">Recuperar contraseña</a>
+                        </MaterialUI.Typography>
+                    </MaterialUI.Grid>
+                </MaterialUI.Grid>
+            </MaterialUI.Paper>
+        </MaterialUI.Grid>
+        
+        <MaterialUI.Grid xs={12} md={1} item></MaterialUI.Grid>
+    </MaterialUI.Grid>
 
 {% endblock %}

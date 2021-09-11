@@ -10,13 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import re
 from os import path
 from pathlib import Path
+from collections import namedtuple
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-MEDIA_ROOT = BASE_DIR / 'archivos'
 
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = path.join(BASE_DIR, 'archivos/')
 
 
 # Quick-start development settings - unsuitable for production
@@ -28,8 +32,12 @@ SECRET_KEY = 'django-insecure-9v!w)fsw!8y6k$)0cymmiy^-w7lqdrlq8&(ddfqwd-ga^b=rb$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+HOST = 'http://127.0.0.1:8000/'
 ALLOWED_HOSTS = []
 
+AUTHENTICATION_BACKENDS = [
+    'sitio.backends.UsuarioAuthBackend'
+]
 
 # Application definition
 
@@ -131,8 +139,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Auth configs
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = "perfil"
+LOGIN_REDIRECT_URL = "inicio"
 LOGOUT_REDIRECT_URL = "inicio"
+REGISTER_REDIRECT_URL = 'inicio'
 AUTH_USER_MODEL = 'sitio.Usuario'
 
 # Email settings template
@@ -143,8 +152,32 @@ AUTH_USER_MODEL = 'sitio.Usuario'
 # EMAIL_USE_TLS =
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+EMAILS = {
+    'CONFIRM_USER_EMAIL': {
+        'ACTIVATION_URL': 'confirmar_email',
+        'subject': 'Confirmá tu cuenta',
+        'template': 'registration/confirm_email.html'
+    }
+}
+
+EmailRule = namedtuple('EmailRule', 'domain format')
+
+
+def allowed_email_domain(domain):
+    email_format = r"^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)?{domain}$"
+    domain_format = re.compile(
+        email_format.replace('{domain}', domain))
+
+    return EmailRule(domain, domain_format)
+
+
+ALLOWED_EMAIL_DOMAINS = [
+    allowed_email_domain('ucse.edu.ar')
+]
+
+
 # Load local configuration
 try:
-    from .settings import *
+    from .local_settings import *
 except ImportError as error:
     pass

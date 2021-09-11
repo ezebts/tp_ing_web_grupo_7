@@ -1,22 +1,70 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Mi Perfil{% endblock %}
 
 {% block content %}
-    <div>
-        <h1>Mi Perfil</h1>
+    <MaterialUI.Grid container>
+        <MaterialUI.Grid xs={12} md={3} item></MaterialUI.Grid>
 
-        <p>
-            Iniciaste sesión como: <span>{{ user.username }} &lt;{{ user.email }}&gt;</span>
-        </p>
+        <MaterialUI.Grid xs={12} md={5} style={ { marginTop: 6 + 'em', zIndex: '1' } } item>
+            <MaterialUI.Paper elevation={3} style={ { padding: '2em 2em' } } className="panel rounded">
+                <MaterialUI.Grid container>
+                    <MaterialUI.Grid xs={12} item>
+                        <MaterialUI.Typography align='center' component='div'>
+                            <h2>Mi Perfil</h2>
+                        </MaterialUI.Typography>
 
-        <a href="{% url 'password_change' %}">Cambiar contraseña</a>
+                        <div style={ {maxWidth:125, margin: 'auto', marginBottom: 40} }>
+                            <ImageInput
+                                csrf="{{ csrf_token }}"
+                                placeholderLoad="{% static 'img/cameraHolder.png' %}"
+                                placeholderShow="{% static '' %}"
+                                uploadto="{% url 'actualizar_foto' %}"
+                                next="perfil"
+                                src="{% if user.imagen %}{{ user.imagen.url }}{% endif %}"
+                            ></ImageInput>
+                        </div>
 
-        {% if user.is_superuser %}
-            <a href="{% url 'admin:index' %}">Administrar Sitio</a>
-        {% endif %}
+                        <MaterialUI.Typography align='left' component='div'>
+                            <p style={ {paddingLeft: 10} }>
+                                Cuenta: <span style={ {fontWeight: 'bold'} }>@{{ user.username }}</span> <span>&lt;{{ user.email }}&gt; {% if not user.verified %} (<span style={ { color: 'red', fontWeight: 'bold' } }>NO VERIFICADO</span>) {% endif %}</span>
+                            </p>
 
-        <a href="{% url 'inicio' %}">Ir al inicio</a>
-        <a href="{% url 'logout' %}">Cerrar sesión</a>
-    </div>
+                            {% if not user.verified %}
+                                <p style={ { backgroundColor: 'rgb(255, 244, 229)', padding: '8px 18px' } }>
+                                    <MaterialUI.Icon className="material-icons-outlined" style={ {color: '#ff9800', float: 'left', marginRight: 16} }>warning</MaterialUI.Icon>
+                                    <span className="message" style={ {color: 'rgb(102, 60, 0)'} }>
+                                        Las cuentas aún no verificadas no podrán realizar algunas acciones en el sitio y con el tiempo se darán de baja.
+                                    </span>
+                                </p>
+                            {% else %}
+                                <p style={ { backgroundColor: 'rgb(237, 247, 237)', padding: '8px 18px' } }>
+                                    <MaterialUI.Icon className="material-icons-outlined" style={ {color: '#4caf50', float: 'left', marginRight: 16} }>verified</MaterialUI.Icon>
+                                    <span className="message">
+                                        ¡Genial! Tu cuenta está verificada
+                                    </span>
+                                </p>
+                            {% endif %}
+                        </MaterialUI.Typography>
+                    </MaterialUI.Grid>
+                        
+                    <MaterialUI.Grid xs={12} md={10} item>
+                        <MaterialUI.Typography align='left' component='div' style={ { paddingTop: '0', paddingLeft: '.25em' } }>
+                            <a href="{% url 'password_change' %}" className="link clear-sides">Cambiar contraseña</a>
+
+                            {% if user.is_superuser %}
+                                <a href="{% url 'admin:index' %}" className="link clear-sides">Administrar Sitio</a>
+                            {% endif %}
+
+                            <a href="{% url 'inicio' %}" className="link clear-sides">Ir al inicio</a>
+                            <a href="{% url 'logout' %}" className="link clear-sides" style={ {color: 'red'} }>Cerrar sesión</a>
+                        </MaterialUI.Typography>
+                    </MaterialUI.Grid>
+                </MaterialUI.Grid>
+            </MaterialUI.Paper>
+        </MaterialUI.Grid>
+
+        <MaterialUI.Grid xs={12} md={3} item></MaterialUI.Grid>
+    </MaterialUI.Grid>
 {% endblock %}

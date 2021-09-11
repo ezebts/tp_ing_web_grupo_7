@@ -1,18 +1,18 @@
-from .models import Comentario, Publicacion, Autor
 from django.contrib.auth import login
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
-from .forms import RegisterPublicacionForm, RegisterUserForm
+from sitio.models import Comentario, Publicacion, Autor
+from sitio.errors import EmailNotAllowedError
+from sitio.forms import RegisterPublicacionForm, RegisterUserForm, UserChangeImageForm
+from sitio.services import verify_usuario
 
 
-# Create your views here.
 def inicio(request):
-    return render(request, 'inicio.html', {})
-
-def repositorio(request):
     publicaciones = Publicacion.objects.all()
-    return render(request, 'repositorio.html', {'publicaciones':publicaciones})
+    return render(request, 'inicio.html', {'publicaciones': publicaciones})
+
 
 def registro(request):
     form = RegisterUserForm()
@@ -24,7 +24,7 @@ def registro(request):
             user = form.save()
             login(request, user)
 
-            return redirect(reverse("perfil"))
+            return redirect(reverse(settings.REGISTER_REDIRECT_URL))
 
     return render(
         request,
@@ -33,16 +33,20 @@ def registro(request):
     )
 
 
-def publicar(request): # Problema para cargar los archivos
+@login_required
+def publicar(request):  # Problema para cargar los archivos
     if request.method == 'POST':
         form = RegisterPublicacionForm(request.POST, request.FILES)
 
         if form.is_valid():
-            publi = form.save()
+            form.save(request.user)
+
+            return redirect(reverse('inicio'))
     else:
         form = RegisterPublicacionForm()
-    
+
     return render(request, 'publicar.html', {"form": form})
+
 
 def publicacion(request):
     if request.method == 'GET':
@@ -55,12 +59,34 @@ def publicacion(request):
 
     return render(request, 'publicacion.html', {'publicacion': publicacion,
                                                 'comentarios': comentarios,
-                                                'autores'    : autores,    })
-
-
-
+                                                'autores': autores, })
 
 
 @login_required
-def pefil(request):
+def confirmar_email(request, uid, token):
+    validated = verify_usuario(request.user, uid, token)
+
+    if validated:
+        return redirect('perfil')
+    else:
+        return redirect('inicio')
+
+
+@login_required
+def actualizar_perfil_img(request):
+    data = request.GET
+    if request.method == 'POST':
+        data = request.POST
+        form = UserChangeImageForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            frmdata = form.save(commit=False)
+            request.user.imagen = frmdata.imagen
+            request.user.save()
+
+    return redirect(data.get('next', 'inicio'))
+
+
+@login_required
+def perfil(request):
     return render(request, 'cuentas/perfil.html')

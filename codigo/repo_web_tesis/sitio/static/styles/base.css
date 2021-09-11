@@ -1,0 +1,129 @@
+
+body {
+    background-color: #f3f2ef;
+    margin: 0;
+}
+
+.gridContainer {
+    padding: 10px;
+}
+
+.background {
+    height: 100vh;
+    width: 100%;
+    float: left;
+    position: absolute;
+    z-index: -1;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.background::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.mask::after {
+    background-image: linear-gradient(120deg, #31231c, black);
+    opacity: .85;
+}
+
+.gridContainer .gridItem {
+    justify-content: center;
+    align-items: center;
+}
+
+.gridContainer .gridItem.space {
+    margin-bottom: 20px;
+}
+
+.gridContainer .gridItem.space-sm {
+    margin-bottom: 6px;
+}
+
+.gridContainer .gridItem .stretch {
+    align-self: stretch;
+    text-align: center;
+    width: 100%;
+}
+
+ul {
+    padding-inline-start: 0px;
+    list-style: none;
+}
+
+.errorlist li,
+.form-error {
+    color: #f44336;
+}
+
+.errorlist {
+    max-height: 10em;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
+}
+
+.form-error {
+    margin: 0;
+    margin-bottom: 5px;
+}
+
+.link {
+    color: #0a66c2;
+    text-decoration: none;
+    display: block;
+    float: left;
+    margin: 5px;
+}
+
+.link.clear-sides {
+    clear: both;
+}
+
+.panel {
+    padding-top: 15px;
+    padding-bottom: 30px;
+    background-color: white;
+}
+
+.rounded {
+    /* Safari 3-4, iOS 1-3.2, Android 1.6- */
+    -webkit-border-radius: 18px!important; 
+
+    /* Firefox 1-3.6 */
+    -moz-border-radius: 18px!important; 
+
+    /* Opera 10.5, IE 9, Safari 5, Chrome, Firefox 4, iOS 4, Android 2.1+ */
+    border-radius: 18px!important; 
+}
+
+.white {
+    color: white!important;
+    border-color: white!important;
+}
+
+.btn-subir {
+	padding:20px;
+	background:#024959;
+	color:#fff;
+    background-color: #0a66c2!important;
+}
+
+.btn-subir > * {
+    color:#fff;
+}
+
+.message {
+    font-size: .95rem!important;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    line-height: 1.43;
+    letter-spacing: 0.01071em;
+    color:rgb(30, 70, 32);
+}
