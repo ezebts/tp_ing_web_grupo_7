@@ -90,11 +90,20 @@ class Autor(models.Model):
 
 
 class Publicacion(models.Model):
-    # Un autor tiene muchas publicaciones y una publicacion muchos autores
-    usuario = models.ForeignKey(
-        'Usuario', on_delete=DO_NOTHING)
+
+    ESTADOS_PUBLICACION = (
+        ('publicada','La publicación está activa'),
+        ('borrador', 'La publicación está siendo escrita y no activa'),
+        ('en_revision', 'La publicacion esta siendo evaluada por administradores'),
+        ('bloqueada', 'La publicacion no está activa'),
+    )
+
+
+    estado = models.CharField(max_length=200, choices=ESTADOS_PUBLICACION, default='en_revision')
+    usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
     autores = models.ManyToManyField(Autor)
     fecha_creacion = models.DateField(default=timezone.now)
+    año_creacion = models.DateField(default=timezone.now)
     titulo = models.CharField(max_length=100)
     resumen = models.CharField(max_length=300)
     vistas = models.IntegerField(default=0)
