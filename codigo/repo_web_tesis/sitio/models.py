@@ -93,7 +93,6 @@ class Publicacion(models.Model):
 
     ESTADOS_PUBLICACION = (
         ('publicada','La publicación está activa'),
-        ('borrador', 'La publicación está siendo escrita y no activa'),
         ('en_revision', 'La publicacion esta siendo evaluada por administradores'),
         ('bloqueada', 'La publicacion no está activa'),
     )
