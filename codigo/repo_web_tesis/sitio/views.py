@@ -62,6 +62,16 @@ def publicacion(request):
                                                 'comentarios': comentarios,
                                                 'autores': autores, })
 
+def filtrar(request):
+    if request.method == 'GET':
+        if request.GET['carrera']:
+            #filtrar por carrera
+            pass
+        elif request.GET['año']:
+            #filtrar por año
+            pass
+
+    return render(request, 'inicio.html', {})
 
 @login_required
 def confirmar_email(request, uid, token):

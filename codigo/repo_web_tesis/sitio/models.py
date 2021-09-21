@@ -20,6 +20,14 @@ ESTADOS_USUARIO = namedtuple(
     'VERIFICADO NO_VERIFICADO BLOQUEADO_PERM BLOQUEADO_TEMP'
 )(1, 2, 3, 4)
 
+CARRERAS = (
+    (1, 'Ingenieria en informatica'),
+    (2, 'Abogacia'),
+    (3, 'Contaduria'),
+    (4, 'Medios visuales')
+)
+
+
 
 class UsuarioSignals(Signal):
     new = Signal()
@@ -49,11 +57,14 @@ class Usuario(AbstractUser):
     on_created = UsuarioSignals()
 
     email = models.EmailField(blank=False, null=False, unique=True)
-
     estado = models.IntegerField(
         choices=namedtuple_choices(ESTADOS_USUARIO), default=ESTADOS_USUARIO.NO_VERIFICADO)
-
     imagen = models.ImageField(null=True, default=None)
+    #   Un usuario puede tener muchos seguidores
+    #   y seguir a muchos.
+
+    siguiendo = models.ManyToManyField('self')
+    seguidores = models.ManyToManyField('self')
 
     @property
     def verified(self):
@@ -88,6 +99,12 @@ class Autor(models.Model):
 
         return f'{ nombre } { apellido }'
 
+    def __str__(self):
+        return self.full_name
+
+
+
+
 
 class Publicacion(models.Model):
 
@@ -97,12 +114,12 @@ class Publicacion(models.Model):
         ('bloqueada', 'La publicacion no está activa'),
     )
 
-
     estado = models.CharField(max_length=200, choices=ESTADOS_PUBLICACION, default='en_revision')
     usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
     autores = models.ManyToManyField(Autor)
     fecha_creacion = models.DateField(default=timezone.now)
     año_creacion = models.DateField(default=timezone.now)
+    carrera = models.IntegerField(choices=CARRERAS, default=1)
     titulo = models.CharField(max_length=100)
     resumen = models.CharField(max_length=300)
     vistas = models.IntegerField(default=0)
@@ -114,3 +131,4 @@ class Comentario(models.Model):
     texto = models.CharField(max_length=100)
     archivo = models.FileField(upload_to='', blank=True)
     publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE,)
+
