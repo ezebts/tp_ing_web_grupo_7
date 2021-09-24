@@ -37,16 +37,20 @@ class UsuarioSignals(Signal):
 
         if is_new:
             self.new.send(*args, **kwargs)
-
-
 class UsuarioManager(UserManager):
+
     def create_superuser(self, username, email=None, password=None, **extra_fields):
         superuser = super().create_superuser(username, email, password, **extra_fields)
         superuser.estado = ESTADOS_USUARIO.VERIFICADO
         superuser.save()
         return superuser
 
-
+class Publicaciones(models.Manager):
+    def filtrar(self, año, carrera):
+        return (self.filter(año_creacion__year=carrera)
+                    .filter(carrera=año)
+                    .order_by('año_creacion'))
+        
 class Usuario(AbstractUser):
     """
     Usuario base del sitio
@@ -87,7 +91,6 @@ class Usuario(AbstractUser):
         self.on_created.send(sender=self.__class__,
                              is_new=is_new, usuario=self)
 
-
 class Autor(models.Model):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=30)
@@ -102,11 +105,9 @@ class Autor(models.Model):
     def __str__(self):
         return self.full_name
 
-
-
-
-
 class Publicacion(models.Model):
+
+    objects = Publicaciones() 
 
     ESTADOS_PUBLICACION = (
         ('publicada','La publicación está activa'),
@@ -118,7 +119,7 @@ class Publicacion(models.Model):
     usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
     autores = models.ManyToManyField(Autor)
     fecha_creacion = models.DateField(default=timezone.now)
-    año_creacion = models.DateField(default=timezone.now)
+    fecha_publicacion = models.DateField(default=timezone.now)
     carrera = models.IntegerField(choices=CARRERAS, default=1)
     titulo = models.CharField(max_length=100)
     resumen = models.CharField(max_length=300)
@@ -126,9 +127,16 @@ class Publicacion(models.Model):
     archivo = models.FileField(upload_to='', blank=True)
     imagen = models.FileField(upload_to='', blank=True)
 
+    def __str__(self):
+        return self.titulo
+    
+    @property
+    def año_publicacion(self):
+        return self.fecha_publicacion.strftime("%Y")
 
 class Comentario(models.Model):
     texto = models.CharField(max_length=100)
     archivo = models.FileField(upload_to='', blank=True)
-    publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE,)
+    publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE)
+
 

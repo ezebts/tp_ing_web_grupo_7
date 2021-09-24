@@ -1,10 +1,9 @@
-from repo_web_tesis.sitio.models import CARRERAS
 from django.contrib.auth import login
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
-from sitio.models import Comentario, Publicacion, Autor
+from sitio.models import Comentario, Publicacion, Autor, CARRERAS, Publicaciones
 from sitio.errors import EmailNotAllowedError
 from sitio.forms import RegisterPublicacionForm, RegisterUserForm, UserChangeImageForm
 from sitio.services import verify_usuario
@@ -12,6 +11,7 @@ from sitio.services import verify_usuario
 
 def inicio(request):
     publicaciones = Publicacion.objects.all()
+    #publicaciones = Publicaciones.all()
     return render(request, 'inicio.html', {'publicaciones': publicaciones})
 
 
@@ -65,9 +65,15 @@ def publicacion(request):
 
 def filtrar(request):
     if request.method == 'GET':
-        f_año = request.GET['año']
-        f_carrera = request.GET['carrera']
-        publicaciones = Publicacion.objects.filter(año_creacion__year=f_año).filter(carrera=f_carrera).order_by('año_creacion')
+        año = request.GET['año']
+        carrera = request.GET['carrera']
+
+        publicaciones = Publicaciones.filtrar(año,carrera)
+
+        #publicaciones = (Publicacion.objects
+            #.filter(año_creacion__year=f_año)
+            #.filter(carrera=f_carrera)
+            #.order_by('año_creacion'))
 
     return render(request, 'inicio.html', {'publicaciones',publicaciones})
 
