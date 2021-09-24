@@ -1,3 +1,4 @@
+from repo_web_tesis.sitio.models import CARRERAS
 from django.contrib.auth import login
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
@@ -64,14 +65,11 @@ def publicacion(request):
 
 def filtrar(request):
     if request.method == 'GET':
-        if request.GET['carrera']:
-            #filtrar por carrera
-            pass
-        elif request.GET['año']:
-            #filtrar por año
-            pass
+        f_año = request.GET['año']
+        f_carrera = request.GET['carrera']
+        publicaciones = Publicacion.objects.filter(año_creacion__year=f_año).filter(carrera=f_carrera).order_by('año_creacion')
 
-    return render(request, 'inicio.html', {})
+    return render(request, 'inicio.html', {'publicaciones',publicaciones})
 
 @login_required
 def confirmar_email(request, uid, token):
