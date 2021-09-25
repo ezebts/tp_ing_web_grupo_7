@@ -14,12 +14,10 @@ def namedtuple_choices(nmtuple):
         for field in nmtuple._fields
     )
 
-
 ESTADOS_USUARIO = namedtuple(
     'EstadosUsuario',
     'VERIFICADO NO_VERIFICADO BLOQUEADO_PERM BLOQUEADO_TEMP'
 )(1, 2, 3, 4)
-
 CARRERAS = (
     (1, 'Ingenieria en informatica'),
     (2, 'Abogacia'),
@@ -44,7 +42,6 @@ class UsuarioManager(UserManager):
         superuser.estado = ESTADOS_USUARIO.VERIFICADO
         superuser.save()
         return superuser
-
 class Publicaciones(models.Manager):
     def filtrar(self, año, carrera):
         return (self.filter(año_creacion__year=carrera)
@@ -64,8 +61,6 @@ class Usuario(AbstractUser):
     estado = models.IntegerField(
         choices=namedtuple_choices(ESTADOS_USUARIO), default=ESTADOS_USUARIO.NO_VERIFICADO)
     imagen = models.ImageField(null=True, default=None)
-    #   Un usuario puede tener muchos seguidores
-    #   y seguir a muchos.
 
     siguiendo = models.ManyToManyField('self')
     seguidores = models.ManyToManyField('self')
@@ -135,7 +130,7 @@ class Publicacion(models.Model):
         return self.fecha_publicacion.strftime("%Y")
 
 class Comentario(models.Model):
-    texto = models.CharField(max_length=100)
+    texto = models.TextField(max_length=1000)
     archivo = models.FileField(upload_to='', blank=True)
     publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE)
 
