@@ -1,6 +1,7 @@
+{% load static %}
 {% load utils %}
 
-<form method="{{ method }}" action="{{ action }}">
+<form method="{{ method }}" action="{{ action }}" encType="multipart/form-data">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
     <MaterialUI.Grid
         container
@@ -12,7 +13,7 @@
             {% for field in form %}
                 <MaterialUI.Grid item className="gridItem space-sm" xs={12}>
 
-                    {% if field|field_type in 'TextInput,PasswordInput,EmailInput' %}
+                    {% if field|field_type in 'TextInput,PasswordInput,EmailInput,Textarea' %}
                         {% if field|field_type == 'PasswordInput' %}
                             <PasswordField
                                 InputProps={{
@@ -48,10 +49,49 @@
                                 className="stretch"
                                 placeholder="{{ field|field_attrs|get_key:'placeholder' }}"
                                 type="text"
+
                                 {% if field.field.required %}
                                     required
                                 {% endif %}
+
+                                {% if field|field_type == 'Textarea' %}
+                                    multiline
+                                    rows={ {{field|field_attrs|get_key:'rows'}} }
+                                    rowsMax={Infinity}
+                                {% endif %}
                             ></MaterialUI.TextField>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if field|field_type in 'FileInput,ClearableFileInput' %}
+                        {% if 'image' in field|field_attrs|get_key:'accept' %}
+                            <ImageInput
+                                name="{{ field.html_name }}"
+
+                                {% if field|field_attrs|get_key:'height' %}
+                                    height={ {{field|field_attrs|get_key:'height'}} }
+                                {% endif %}
+
+                                {% if field|field_attrs|get_key:'width' %}
+                                    width={ {{field|field_attrs|get_key:'width'}} }
+                                {% endif %}
+
+                                placeholderLoad="{% static 'img/uploadimgholder.png' %}"
+                                placeholderShow="{% static 'img/imgdisplayholder.png' %}"
+
+                                variant="square"
+                                
+                                src="{{ field.url }}"
+                            ></ImageInput>
+                        {% else %}
+                            <FileInput
+                                name="{{ field.html_name }}"
+
+                                {% if field|field_attrs|get_key:'accept' %}
+                                    accept="{{ field|field_attrs|get_key:'accept' }}"
+                                {% endif %}
+
+                            ></FileInput>
                         {% endif %}
                     {% endif %}
 

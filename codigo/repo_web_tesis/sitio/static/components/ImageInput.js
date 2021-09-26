@@ -3,16 +3,17 @@ class ImageInput extends React.Component {
     constructor(props) {
         super(props);
 
-        this.id = _.uniqueId('image-input');
+        this.id = _.uniqueId('file-image-field');
 
         this.state = {
-            placeholder: false
+            placeholder: false,
+            src: props.src || null
         }
 
         this.handleClick = this.handleClick.bind(this);
         this.showPlaceholder = this.showPlaceholder.bind(this);
         this.hidePlaceholder = this.hidePlaceholder.bind(this);
-        this.send = this.send.bind(this);
+        this.displayPreview = this.displayPreview.bind(this);
     }
 
     handleClick() {
@@ -38,41 +39,45 @@ class ImageInput extends React.Component {
         }))
     }
 
-    getPlaceHolder() {
-        if (this.state.placeholder && !this.props.readonly) {
-            return this.props.placeholderLoad;
-        } else if (!this.props.src) {
-            return this.props.placeholderShow;
-        } else {
-            return this.props.src;
+    setSrc(value) {
+        this.setState((prev) => ({
+            src: value
+        }))
+    }
+
+    displayPreview() {
+        const imageInput = document.querySelector(`#${this.id} input[type='file']`);
+
+        if (imageInput) {
+            const [image] = imageInput.files;
+
+            if (image) {
+                this.setSrc(URL.createObjectURL(image));
+                document.dispatchEvent(new Event(`ImageInput[${this.id}]:changed`));
+            }
         }
     }
 
-    send() {
-        const selector = '#' + this.id + " form";
-        const form = document.querySelector(selector);
-
-        if (form) {
-            form.submit();
+    getPlaceHolder() {
+        if (this.state.placeholder && !this.props.readonly) {
+            return this.props.placeholderLoad;
+        } else if (!this.state.src) {
+            return this.props.placeholderShow;
+        } else {
+            return this.state.src;
         }
     }
 
     render() {
-        const { readonly, avatarProps } = this.props;
+        const { readonly, avatarProps, name } = this.props;
 
         const input = !readonly
-            ? (
-                <form action={this.props.uploadto || ''} method="POST" encType="multipart/form-data">
-                    <input type="hidden" name="csrfmiddlewaretoken" value={this.props.csrf} />
-                    <input type="hidden" name="next" value={this.props.next} />
-                    <input name="imagen" accept="image/*" onChange={this.send} style={{ display: 'none' }} type="file"></input>
-                </form>
-            )
+            ? (<input name={name || 'imagen'} accept="image/*" onChange={this.displayPreview} style={{ display: 'none' }} type="file"></input>)
             : null;
 
         return (
             <MaterialUI.Box id={this.id}>
-                <MaterialUI.Avatar style={{ height: this.props.height || 124, width: this.props.width || 124, cursor: !readonly ? 'pointer' : 'default' }} {...(avatarProps || {})} src={this.getPlaceHolder()} onClick={this.handleClick} onMouseEnter={this.showPlaceholder} onMouseLeave={this.hidePlaceholder}></MaterialUI.Avatar>
+                <MaterialUI.Avatar variant={this.props.variant || null} style={{ height: this.props.height || 124, width: this.props.width || 124, cursor: !readonly ? 'pointer' : 'default' }} {...(avatarProps || {})} src={this.getPlaceHolder()} onClick={this.handleClick} onMouseEnter={this.showPlaceholder} onMouseLeave={this.hidePlaceholder}></MaterialUI.Avatar>
                 {input}
             </MaterialUI.Box>
         )

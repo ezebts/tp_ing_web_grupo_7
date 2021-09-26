@@ -31,9 +31,23 @@ class RegisterUserForm(UserCreationForm):
 
 
 class RegisterPublicacionForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        imagen = self.fields.get('imagen')
+
+        if imagen:
+            imagen.widget.attrs['accept'] = 'image/*'
+            imagen.widget.attrs['width'] = '328'
+            imagen.widget.attrs['height'] = '328'
+
+        archivo = self.fields.get('archivo')
+
+        if archivo:
+            archivo.widget.attrs['accept'] = 'application/pdf'
+
     class Meta:
         model = Publicacion
-        fields = ['titulo', 'resumen', 'fecha_creacion', 'imagen', 'archivo']
+        fields = ['titulo', 'resumen', 'imagen', 'archivo']
 
     def save(self, usuario, commit=True):
         pub_data = super().save(commit=False)
@@ -54,6 +68,7 @@ class RegisterComentarioForm(ModelForm):
 
         comentario.publicacion = id_publicacion
         comentario.save()
+
 
 class UserChangeImageForm(ModelForm):
     class Meta:

@@ -16,14 +16,14 @@
                         </MaterialUI.Typography>
 
                         <div style={ {maxWidth:125, margin: 'auto', marginBottom: 40} }>
-                            <ImageInput
+                            <ImageUploadForm
                                 csrf="{{ csrf_token }}"
                                 placeholderLoad="{% static 'img/cameraholder.png' %}"
                                 placeholderShow="{% static '' %}"
                                 uploadto="{% url 'actualizar_foto' %}"
                                 next="perfil"
                                 src="{% if user.imagen %}{{ user.imagen.url }}{% endif %}"
-                            ></ImageInput>
+                            ></ImageUploadForm>
                         </div>
 
                         <MaterialUI.Typography align='left' component='div'>
