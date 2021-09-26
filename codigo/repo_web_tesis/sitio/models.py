@@ -14,11 +14,17 @@ def namedtuple_choices(nmtuple):
         for field in nmtuple._fields
     )
 
-
 ESTADOS_USUARIO = namedtuple(
     'EstadosUsuario',
     'VERIFICADO NO_VERIFICADO BLOQUEADO_PERM BLOQUEADO_TEMP'
 )(1, 2, 3, 4)
+CARRERAS = (
+    (1, 'Ingenieria en informatica'),
+    (2, 'Abogacia'),
+    (3, 'Contaduria'),
+    (4, 'Medios visuales')
+)
+
 
 
 class UsuarioSignals(Signal):
@@ -29,16 +35,19 @@ class UsuarioSignals(Signal):
 
         if is_new:
             self.new.send(*args, **kwargs)
-
-
 class UsuarioManager(UserManager):
+
     def create_superuser(self, username, email=None, password=None, **extra_fields):
         superuser = super().create_superuser(username, email, password, **extra_fields)
         superuser.estado = ESTADOS_USUARIO.VERIFICADO
         superuser.save()
         return superuser
-
-
+class Publicaciones(models.Manager):
+    def filtrar(self, año, carrera):
+        return (self.filter(año_creacion__year=carrera)
+                    .filter(carrera=año)
+                    .order_by('año_creacion'))
+        
 class Usuario(AbstractUser):
     """
     Usuario base del sitio
@@ -49,11 +58,12 @@ class Usuario(AbstractUser):
     on_created = UsuarioSignals()
 
     email = models.EmailField(blank=False, null=False, unique=True)
-
     estado = models.IntegerField(
         choices=namedtuple_choices(ESTADOS_USUARIO), default=ESTADOS_USUARIO.NO_VERIFICADO)
-
     imagen = models.ImageField(null=True, default=None)
+
+    siguiendo = models.ManyToManyField('self')
+    seguidores = models.ManyToManyField('self')
 
     @property
     def verified(self):
@@ -76,7 +86,6 @@ class Usuario(AbstractUser):
         self.on_created.send(sender=self.__class__,
                              is_new=is_new, usuario=self)
 
-
 class Autor(models.Model):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=30)
@@ -88,21 +97,41 @@ class Autor(models.Model):
 
         return f'{ nombre } { apellido }'
 
+    def __str__(self):
+        return self.full_name
 
 class Publicacion(models.Model):
-    # Un autor tiene muchas publicaciones y una publicacion muchos autores
-    usuario = models.ForeignKey(
-        'Usuario', on_delete=DO_NOTHING)
+
+    objects = Publicaciones() 
+
+    ESTADOS_PUBLICACION = (
+        ('publicada','La publicación está activa'),
+        ('en_revision', 'La publicacion esta siendo evaluada por administradores'),
+        ('bloqueada', 'La publicacion no está activa'),
+    )
+
+    estado = models.CharField(max_length=200, choices=ESTADOS_PUBLICACION, default='en_revision')
+    usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
     autores = models.ManyToManyField(Autor)
     fecha_creacion = models.DateField(default=timezone.now)
+    fecha_publicacion = models.DateField(default=timezone.now)
+    carrera = models.IntegerField(choices=CARRERAS, default=1)
     titulo = models.CharField(max_length=100)
     resumen = models.CharField(max_length=300)
     vistas = models.IntegerField(default=0)
     archivo = models.FileField(upload_to='', blank=True)
     imagen = models.FileField(upload_to='', blank=True)
 
+    def __str__(self):
+        return self.titulo
+    
+    @property
+    def año_publicacion(self):
+        return self.fecha_publicacion.strftime("%Y")
 
 class Comentario(models.Model):
-    texto = models.CharField(max_length=100)
+    texto = models.TextField(max_length=1000)
     archivo = models.FileField(upload_to='', blank=True)
-    publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE,)
+    publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE)
+
+

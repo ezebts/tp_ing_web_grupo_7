@@ -16,7 +16,7 @@
                                 <MaterialUI.Grid item xs={12}>
                                     {% if user.is_authenticated %}
                                         <div style={ { float: 'left', marginLeft: '.6rem', marginRight: '.5rem' } }>
-                                            <ImageInput
+                                            <ImageUploadForm
                                                 height={46}
                                                 width={46}
                                                 csrf="{{ csrf_token }}"
@@ -25,7 +25,7 @@
                                                 uploadto="{% url 'actualizar_foto' %}"
                                                 next="inicio"
                                                 src="{% if user.imagen %}{{ user.imagen.url }}{% endif %}"
-                                            ></ImageInput>
+                                            ></ImageUploadForm>
                                         </div>
 
                                         <MaterialUI.Typography component="span">
@@ -81,7 +81,7 @@
                                     fecha="{{ publicacion.fecha_creacion }}"
                                     resumen="{{ publicacion.resumen }}"
                                     ver="{% url 'publicacion' %}?id={{publicacion.id|urlencode}}"
-                                    imagen="{{ publicacion.imagen.url }}"
+                                    imagen="{% if publicacion.imagen %}{{ publicacion.imagen.url }}{% endif %}"
                                 ></PublicacionCard>
                             </MaterialUI.Grid>
                         {% endfor %}

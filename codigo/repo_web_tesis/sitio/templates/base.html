@@ -28,6 +28,8 @@
         <!-- Registrar componentes a usar-->
         <script type="text/babel" src="{% static 'components/PasswordInput.js' %}"></script>
         <script type="text/babel" src="{% static 'components/ImageInput.js' %}"></script>
+        <script type="text/babel" src="{% static 'components/FileInput.js' %}"></script>
+        <script type="text/babel" src="{% static 'components/ImageUploadForm.js' %}"></script>
         <script type="text/babel" src="{% static 'components/PublicacionCard.js' %}"></script>
         <script type="text/babel" src="{% static 'components/GoUpButton.js' %}"></script>
         <script type="text/babel" src="{% static 'components/ApplicationBar.js' %}"></script>
@@ -37,7 +39,6 @@
 
         <!-- Contenedor de la app -->
         <script id='content' type="text/template">
-
             <ApplicationBar {% if user.is_authenticated %} user={ {{ user|json }} } {% endif %} title="UCSE Investigación" loginLink="{% url 'login' %}"></ApplicationBar>
             
             <MaterialUI.Box>

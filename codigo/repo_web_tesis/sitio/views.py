@@ -3,16 +3,16 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
-from sitio.models import Comentario, Publicacion, Autor
+from sitio.models import Comentario, Publicacion, Autor, CARRERAS, Publicaciones
 from sitio.errors import EmailNotAllowedError
-from sitio.forms import RegisterPublicacionForm, RegisterUserForm, UserChangeImageForm
+from sitio.forms import RegisterPublicacionForm, RegisterUserForm, UserChangeImageForm, RegisterComentarioForm
 from sitio.services import verify_usuario
 
 
 def inicio(request):
     publicaciones = Publicacion.objects.all()
+    #publicaciones = Publicaciones.all()
     return render(request, 'inicio.html', {'publicaciones': publicaciones})
-
 
 def registro(request):
     form = RegisterUserForm()
@@ -33,7 +33,6 @@ def registro(request):
         {"form": form}
     )
 
-
 @login_required
 def publicar(request):  # Problema para cargar los archivos
     if request.method == 'POST':
@@ -48,7 +47,6 @@ def publicar(request):  # Problema para cargar los archivos
 
     return render(request, 'publicar.html', {"form": form})
 
-
 def publicacion(request):
     if request.method == 'GET':
         id = request.GET['id']
@@ -62,6 +60,19 @@ def publicacion(request):
                                                 'comentarios': comentarios,
                                                 'autores': autores, })
 
+def filtrar(request):
+    if request.method == 'GET':
+        año = request.GET['año']
+        carrera = request.GET['carrera']
+
+        publicaciones = Publicaciones.filtrar(año,carrera)
+
+        #publicaciones = (Publicacion.objects
+            #.filter(año_creacion__year=f_año)
+            #.filter(carrera=f_carrera)
+            #.order_by('año_creacion'))
+
+    return render(request, 'inicio.html', {'publicaciones':publicaciones})
 
 @login_required
 def confirmar_email(request, uid, token):
@@ -71,7 +82,6 @@ def confirmar_email(request, uid, token):
         return redirect('perfil')
     else:
         return redirect('inicio')
-
 
 @login_required
 def actualizar_perfil_img(request):
@@ -87,7 +97,18 @@ def actualizar_perfil_img(request):
 
     return redirect(data.get('next', 'inicio'))
 
-
 @login_required
 def perfil(request):
     return render(request, 'cuentas/perfil.html')
+
+@login_required
+def comentar(request):
+    if request.method == 'POST':
+        id = request.GET['id_publicacion']
+        publicacion= Publicaciones.get(pk=id)
+        form = RegisterComentarioForm(request.POST)
+
+        if form.is_valid():
+            form.save(id)
+            
+    return redirect('publicacion')

@@ -12,7 +12,7 @@
         tempHandler.append(htmlElement.content.cloneNode(true));
         html = tempHandler.getInnerHTML();
     } else {
-        html = htmlElement.getInnerHTML();
+        html = htmlElement.innerHTML;
     }
 
     const jsx = Babel.transform(

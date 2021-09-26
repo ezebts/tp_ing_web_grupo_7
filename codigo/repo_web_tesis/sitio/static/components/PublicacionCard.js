@@ -102,7 +102,7 @@ class PublicacionCard extends React.Component {
                                         <Icon>more_vert</Icon>
                                     </IconButton> : null
                             }
-                            {...(titulo ? { title: { titulo } } : {})}
+                            {...(titulo ? { title: titulo } : {})}
                             subheader={fecha}
                         /> : null
                 }
