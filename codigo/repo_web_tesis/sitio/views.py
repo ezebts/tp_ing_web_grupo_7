@@ -34,14 +34,14 @@ def registro(request):
     )
 
 @login_required
-def publicar(request):  # Problema para cargar los archivos
+def publicar(request): 
     if request.method == 'POST':
         form = RegisterPublicacionForm(request.POST, request.FILES)
 
         if form.is_valid():
             form.save(request.user)
 
-            return redirect(reverse('inicio'))
+            return redirect(reverse('inicio')) # Redireccionar a la publicacion creada
     else:
         form = RegisterPublicacionForm()
 
@@ -109,6 +109,6 @@ def comentar(request):
         form = RegisterComentarioForm(request.POST)
 
         if form.is_valid():
-            form.save(id)
+            form.save(id, request.user)
             
     return redirect('publicacion')

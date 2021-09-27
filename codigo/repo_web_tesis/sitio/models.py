@@ -35,6 +35,8 @@ class UsuarioSignals(Signal):
 
         if is_new:
             self.new.send(*args, **kwargs)
+
+
 class UsuarioManager(UserManager):
 
     def create_superuser(self, username, email=None, password=None, **extra_fields):
@@ -130,8 +132,10 @@ class Publicacion(models.Model):
         return self.fecha_publicacion.strftime("%Y")
 
 class Comentario(models.Model):
+    usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
     texto = models.TextField(max_length=1000)
     archivo = models.FileField(upload_to='', blank=True)
+    fecha_creacion = models.DateField(default=timezone.now)
     publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE)
 
 

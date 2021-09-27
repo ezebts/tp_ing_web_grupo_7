@@ -63,10 +63,12 @@ class RegisterComentarioForm(ModelForm):
         model = Comentario
         fields = ['texto', 'archivo']
 
-    def save(self, id_publicacion):
+    def save(self, id_publicacion, usuario):
         comentario = super().save(commit=False)
 
         comentario.publicacion = id_publicacion
+        comentario.usuario = usuario
+
         comentario.save()
 
 
