@@ -178,6 +178,6 @@ ALLOWED_EMAIL_DOMAINS = [
 
 # Load local configuration
 try:
-    from .settings import *
+    from .local_settings import *
 except ImportError as error:
     pass
