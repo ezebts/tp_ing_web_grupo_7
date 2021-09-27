@@ -104,7 +104,7 @@ def perfil(request):
 @login_required
 def comentar(request):
     if request.method == 'POST':
-        id = request.GET['id_publicacion']
+        id = request.GET['id']
         publicacion= Publicaciones.get(pk=id)
         form = RegisterComentarioForm(request.POST)
 

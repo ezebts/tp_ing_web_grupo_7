@@ -44,6 +44,8 @@ class UsuarioManager(UserManager):
         superuser.estado = ESTADOS_USUARIO.VERIFICADO
         superuser.save()
         return superuser
+
+        
 class Publicaciones(models.Manager):
     def filtrar(self, año, carrera):
         return (self.filter(año_creacion__year=carrera)
@@ -64,8 +66,6 @@ class Usuario(AbstractUser):
         choices=namedtuple_choices(ESTADOS_USUARIO), default=ESTADOS_USUARIO.NO_VERIFICADO)
     imagen = models.ImageField(null=True, default=None)
 
-    siguiendo = models.ManyToManyField('self')
-    seguidores = models.ManyToManyField('self')
 
     @property
     def verified(self):
@@ -76,6 +76,7 @@ class Usuario(AbstractUser):
         helpers.send_email([self.email], subject, template, context=context)
 
     def save(self, *args, creation=False, **kwargs):
+
         """
         creation=True validará si es un nuevo usuario
         y enviará notificaciones relacionadas
@@ -137,5 +138,11 @@ class Comentario(models.Model):
     archivo = models.FileField(upload_to='', blank=True)
     fecha_creacion = models.DateField(default=timezone.now)
     publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE)
+
+class Seguimiento(models.Model):
+    usuario = models.ForeignKey('Usuario', related_name="siguiendo", on_delete=DO_NOTHING)
+    usuario_siguiendo = models.ForeignKey('Usuario', related_name="seguidores", on_delete=DO_NOTHING)
+    fecha_seguimiento = models.DateField(auto_now_add=True)
+
 
 

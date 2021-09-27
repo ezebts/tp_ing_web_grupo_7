@@ -78,3 +78,4 @@ def verify_usuario(usuario, sign, token):
         usuario = None
 
     return usuario
+
