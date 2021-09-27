@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models.deletion import CASCADE, DO_NOTHING
 from django.dispatch import Signal
 from django.utils import timezone
+from django.urls import reverse
 
 from repo_web_tesis import helpers
 
@@ -14,17 +15,18 @@ def namedtuple_choices(nmtuple):
         for field in nmtuple._fields
     )
 
+
 ESTADOS_USUARIO = namedtuple(
     'EstadosUsuario',
     'VERIFICADO NO_VERIFICADO BLOQUEADO_PERM BLOQUEADO_TEMP'
 )(1, 2, 3, 4)
+
 CARRERAS = (
     (1, 'Ingenieria en informatica'),
     (2, 'Abogacia'),
     (3, 'Contaduria'),
     (4, 'Medios visuales')
 )
-
 
 
 class UsuarioSignals(Signal):
@@ -35,6 +37,8 @@ class UsuarioSignals(Signal):
 
         if is_new:
             self.new.send(*args, **kwargs)
+
+
 class UsuarioManager(UserManager):
 
     def create_superuser(self, username, email=None, password=None, **extra_fields):
@@ -42,12 +46,23 @@ class UsuarioManager(UserManager):
         superuser.estado = ESTADOS_USUARIO.VERIFICADO
         superuser.save()
         return superuser
+
+
 class Publicaciones(models.Manager):
-    def filtrar(self, año, carrera):
-        return (self.filter(año_creacion__year=carrera)
-                    .filter(carrera=año)
-                    .order_by('año_creacion'))
-        
+    def filtrar(self, año=None, carreras=[]):
+        unactive_state = Publicacion.ESTADOS_PUBLICACION[2][0]
+
+        publicaciones = self.exclude(estado=unactive_state)
+
+        if año:
+            publicaciones = publicaciones.filter(fecha_publicacion__year=año)
+
+        if carreras:
+            publicaciones = publicaciones.filter(carrera__in=carreras)
+
+        return publicaciones.order_by('-fecha_publicacion')
+
+
 class Usuario(AbstractUser):
     """
     Usuario base del sitio
@@ -60,10 +75,19 @@ class Usuario(AbstractUser):
     email = models.EmailField(blank=False, null=False, unique=True)
     estado = models.IntegerField(
         choices=namedtuple_choices(ESTADOS_USUARIO), default=ESTADOS_USUARIO.NO_VERIFICADO)
+
     imagen = models.ImageField(null=True, default=None)
 
-    siguiendo = models.ManyToManyField('self')
-    seguidores = models.ManyToManyField('self')
+    @property
+    def imagen_url(self):
+        if self.imagen:
+            return self.imagen.url
+        else:
+            return None
+
+    @property
+    def perfil_url(self):
+        return reverse('perfil_publico', kwargs={'pk': self.pk})
 
     @property
     def verified(self):
@@ -86,6 +110,7 @@ class Usuario(AbstractUser):
         self.on_created.send(sender=self.__class__,
                              is_new=is_new, usuario=self)
 
+
 class Autor(models.Model):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=30)
@@ -100,17 +125,19 @@ class Autor(models.Model):
     def __str__(self):
         return self.full_name
 
+
 class Publicacion(models.Model):
 
-    objects = Publicaciones() 
+    objects = Publicaciones()
 
     ESTADOS_PUBLICACION = (
-        ('publicada','La publicación está activa'),
+        ('publicada', 'La publicación está activa'),
         ('en_revision', 'La publicacion esta siendo evaluada por administradores'),
         ('bloqueada', 'La publicacion no está activa'),
     )
 
-    estado = models.CharField(max_length=200, choices=ESTADOS_PUBLICACION, default='en_revision')
+    estado = models.CharField(
+        max_length=200, choices=ESTADOS_PUBLICACION, default='en_revision')
     usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
     autores = models.ManyToManyField(Autor)
     fecha_creacion = models.DateField(default=timezone.now)
@@ -119,19 +146,28 @@ class Publicacion(models.Model):
     titulo = models.CharField(max_length=100)
     resumen = models.CharField(max_length=300)
     vistas = models.IntegerField(default=0)
-    archivo = models.FileField(upload_to='', blank=True)
-    imagen = models.FileField(upload_to='', blank=True)
+    archivo = models.FileField(upload_to='', null=False, blank=False)
+    imagen = models.FileField(upload_to='', null=False, blank=False)
 
     def __str__(self):
         return self.titulo
-    
+
     @property
     def año_publicacion(self):
         return self.fecha_publicacion.strftime("%Y")
 
+
 class Comentario(models.Model):
+    usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
     texto = models.TextField(max_length=1000)
     archivo = models.FileField(upload_to='', blank=True)
+    fecha_creacion = models.DateField(default=timezone.now)
     publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE)
 
 
+class Seguimiento(models.Model):
+    usuario = models.ForeignKey(
+        'Usuario', related_name="siguiendo", on_delete=DO_NOTHING)
+    usuario_siguiendo = models.ForeignKey(
+        'Usuario', related_name="seguidores", on_delete=DO_NOTHING)
+    fecha_seguimiento = models.DateField(auto_now_add=True)

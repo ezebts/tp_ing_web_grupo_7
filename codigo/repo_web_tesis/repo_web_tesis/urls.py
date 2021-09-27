@@ -30,7 +30,8 @@ urlpatterns = [
 
     # Sitio urls
     path('', views.inicio, name='inicio'),
-    path('perfil/', views.perfil, name='perfil'),
+    path('perfil', views.perfil, name='perfil'),
+    path('perfil/<str:pk>', views.perfil_publico, name='perfil_publico'),
     path('perfil/actualizar-foto/',
          views.actualizar_perfil_img, name='actualizar_foto'),
     path("registro/", views.registro, name="registro"),

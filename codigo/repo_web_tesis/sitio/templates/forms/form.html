@@ -80,8 +80,10 @@
                                 placeholderShow="{% static 'img/imgdisplayholder.png' %}"
 
                                 variant="square"
-                                
-                                src="{{ field.url }}"
+
+                                {% if field.field.required %}
+                                    required
+                                {% endif %}
                             ></ImageInput>
                         {% else %}
                             <FileInput
@@ -91,15 +93,46 @@
                                     accept="{{ field|field_attrs|get_key:'accept' }}"
                                 {% endif %}
 
+                                {% if field.field.required %}
+                                    required
+                                {% endif %}
                             ></FileInput>
                         {% endif %}
                     {% endif %}
 
+                    {% if field|field_type in 'Select' %}
+                        <MaterialUI.Select
+                        {% if field.errors %}
+                            error 
+                            helperText="{{ field.errors.0 }}"
+                        {% endif %}
+
+                        defaultValue={ {{field.value}} }
+                        label="{{ field.label }}"
+                        name="{{ field.name }}"
+                        variant="outlined"
+
+                        {% if field.field.required %}
+                            required
+                        {% endif %}
+                        >
+                            {% for option in field.field.choices %}
+                                <MaterialUI.MenuItem value={ {{option.0}} }>{{ option.1 }}</MaterialUI.MenuItem>
+                            {% endfor %}
+                        </MaterialUI.Select>
+                    {% endif %}
+
                     <MaterialUI.Grid item xs={12} className="gridItem errorlist {% if not forloop.last %} space {% else %} space-sm {% endif %}">
                         <MaterialUI.Typography variant="caption" component="span">
-                            {% for error in field.errors|slice:"1:" %}
-                                <p className="form-error">{{ error }}</p>
-                            {% endfor %}
+                            {% if field|field_type in 'FileInput,ClearableFileInput'  %}
+                                {% for error in field.errors %}
+                                    <p className="form-error">{{ error }}</p>
+                                {% endfor %}
+                            {% else %}
+                                {% for error in field.errors|slice:"1:" %}
+                                    <p className="form-error">{{ error }}</p>
+                                {% endfor %}
+                            {% endif %}
                         </MaterialUI.Typography>
                     </MaterialUI.Grid>
 

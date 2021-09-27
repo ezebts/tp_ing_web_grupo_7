@@ -47,7 +47,7 @@ class RegisterPublicacionForm(ModelForm):
 
     class Meta:
         model = Publicacion
-        fields = ['titulo', 'resumen', 'imagen', 'archivo']
+        fields = ['titulo', 'resumen', 'imagen', 'carrera', 'archivo']
 
     def save(self, usuario, commit=True):
         pub_data = super().save(commit=False)
@@ -63,10 +63,12 @@ class RegisterComentarioForm(ModelForm):
         model = Comentario
         fields = ['texto', 'archivo']
 
-    def save(self, id_publicacion):
+    def save(self, id_publicacion, usuario):
         comentario = super().save(commit=False)
 
         comentario.publicacion = id_publicacion
+        comentario.usuario = usuario
+
         comentario.save()
 
 

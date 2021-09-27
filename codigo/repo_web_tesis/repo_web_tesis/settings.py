@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-9v!w)fsw!8y6k$)0cymmiy^-w7lqdrlq8&(ddfqwd-ga^b=rb$
 DEBUG = True
 
 HOST = 'http://127.0.0.1:8000/'
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['testserver', '*']
 
 AUTHENTICATION_BACKENDS = [
     'sitio.backends.UsuarioAuthBackend'
@@ -178,6 +178,6 @@ ALLOWED_EMAIL_DOMAINS = [
 
 # Load local configuration
 try:
-    from .local_settings import *
+    from .settings import *
 except ImportError as error:
     pass

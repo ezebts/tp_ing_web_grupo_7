@@ -5,7 +5,7 @@
 {% block title %} Inicio {% endblock %}
 
 {% block content %}
-    <MaterialUI.Box pt={15}>
+    <MaterialUI.Box pt={15} style={ { overflowY: 'none' } }>
         <MaterialUI.Grid container>
             <MaterialUI.Grid item xs={12} md={2} lg={2}></MaterialUI.Grid>
 
@@ -70,13 +70,55 @@
                     </MaterialUI.Paper>
             </MaterialUI.Grid>
 
-            <MaterialUI.Grid item xs={12} md={4} style={ { overflowY: 'auto', overflowX: 'hidden', maxHeight: '90vh', paddingLeft: 40, paddingRight: 20 } }>
-                <MaterialUI.Grid container>
+            <MaterialUI.Grid item xs={12} md={4} style={ { paddingLeft: 40, paddingRight: 20 } }>
+                {% if publicaciones or action == 'FILTRAR' %}
+                    <MaterialUI.Grid id="publicaciones-filtro" container className="gridContainer">
+                        <MaterialUI.Grid xs={12} item className="gridItem">
+                            <form method="GET" action="/">
+                                <MaterialUI.Grid container>
+                                    <MaterialUI.Grid xs={12} md={3} style={ {marginRight: '20px'} } item className="gridItem">
+                                        <MaterialUI.TextField
+                                        name="filtro_anio"
+                                        label="Filtrar Año"
+                                        placeholder="Todos"
+                                        type="number"
+
+                                        {%if filtro_anio %}
+                                            defaultValue={ {{filtro_anio}} }
+                                        {% endif %}
+
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+
+                                        variant="outlined"
+                                        />
+                                    </MaterialUI.Grid>
+                                    <MaterialUI.Grid xs={9} md={6} item className="gridItem">
+                                        <MultiSelectInput
+                                            label="Filtrar por carrera..."
+                                            className='stretch'
+                                            name="filtro_carreras"
+                                            placeholder="Viendo Todas"
+                                            value={ {{ filtro_carreras|json }} }
+                                            options={ {{ carreras|json }} }
+                                        ></MultiSelectInput>
+                                    </MaterialUI.Grid>
+                                    <MaterialUI.Grid xs={3} md={2} item className="gridItem" style={ { marginBottom: '2.5em' } }>
+                                        <MaterialUI.Button name="action" role="submit" type="submit" value="FILTRAR" variant="outlined" style={ { marginTop:'10px', marginLeft: '15px' } }>FILTRAR</MaterialUI.Button>
+                                    </MaterialUI.Grid>
+                                </MaterialUI.Grid>
+                            </form>
+                        </MaterialUI.Grid>
+                    </MaterialUI.Grid>
+                {% endif %}
+
+                <MaterialUI.Grid container className="gridContainer">
                     {% if publicaciones.count %}
                         {% for publicacion in publicaciones %}
                             <MaterialUI.Grid xs={12} item style={ { marginBottom: '2.5em' } }>
                                 <PublicacionCard
-                                    autores={ {{ publicacion.autores.all|json }} }
+                                    usuario={ {{ publicacion.usuario|json }} }
                                     titulo="{{ publicacion.titulo }}"
                                     fecha="{{ publicacion.fecha_creacion }}"
                                     resumen="{{ publicacion.resumen }}"
@@ -85,6 +127,12 @@
                                 ></PublicacionCard>
                             </MaterialUI.Grid>
                         {% endfor %}
+                    {% elif action == 'FILTRAR' %}
+                        <MaterialUI.Grid xs={12} item style={ { marginBottom: '2.5em' } }>
+                            <MaterialUI.Typography component="div">
+                                <p>No hay resultados que coincidan con tus filtros.</p>
+                            </MaterialUI.Typography>
+                        </MaterialUI.Grid>
                     {% else %}
                         <MaterialUI.Grid xs={12} item style={ { marginBottom: '2.5em' } }>
                             <PublicacionCard
@@ -97,7 +145,7 @@
                     {% endif %}
                 </MaterialUI.Grid>
 
-                <GoUpButton anchor="#publicaciones"></GoUpButton>
+                <GoUpButton anchor="#publicaciones-filtro"></GoUpButton>
             </MaterialUI.Grid>
 
             <MaterialUI.Grid xs={12} lg={4} item></MaterialUI.Grid>

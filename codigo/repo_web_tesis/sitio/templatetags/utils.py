@@ -20,6 +20,22 @@ def field_attrs(field):
 def json(data, **options):
     single = isinstance(data, Model)
 
+    if type(data) is tuple:
+        items = ''
+
+        for item in data:
+            items += '{' + f'id: { item[0] }, name: "{ item[1] }"' + '}, '
+
+        return SafeString('[' + items + ']')
+
+    if type(data) is list:
+        items = ''
+
+        for item in data:
+            items += f'"{item}"' + ','
+
+        return SafeString('[' + items + ']')
+
     if single:
         data = [data]
 
