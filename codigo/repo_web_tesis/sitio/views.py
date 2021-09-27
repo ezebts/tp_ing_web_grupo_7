@@ -3,16 +3,44 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
-from sitio.models import Comentario, Publicacion, Autor, CARRERAS, Publicaciones
+from sitio.models import Usuario, Publicacion, CARRERAS
 from sitio.errors import EmailNotAllowedError
 from sitio.forms import RegisterPublicacionForm, RegisterUserForm, UserChangeImageForm, RegisterComentarioForm
 from sitio.services import verify_usuario
 
 
 def inicio(request):
-    publicaciones = Publicacion.objects.all()
-    #publicaciones = Publicaciones.all()
-    return render(request, 'inicio.html', {'publicaciones': publicaciones})
+    context = {}
+    if request.method == 'GET':
+        año = request.GET.get('filtro_anio', None)
+
+        if año:
+            try:
+                año = int(año)
+            except:
+                año = None
+
+        action = request.GET.get('action', None)
+
+        filtro_carrera_req = request.GET.get('filtro_carreras', '')
+
+        carreras_mapping = dict([(carrera[1], carrera[0])
+                                for carrera in CARRERAS])
+
+        filtro_carreras = [carreras_mapping[str(filtro).strip(
+        )] for filtro in filtro_carrera_req.split(',') if filtro]
+
+        publicaciones = Publicacion.objects.filtrar(
+            año=año, carreras=filtro_carreras)
+
+        view_filtro = [
+            filtro for filtro in filtro_carrera_req.split(',') if filtro]
+
+        context = {'publicaciones': publicaciones, 'carreras': CARRERAS,
+                   'filtro_carreras': view_filtro, 'filtro_anio': año, 'action': action}
+
+    return render(request, 'inicio.html', context)
+
 
 def registro(request):
     form = RegisterUserForm()
@@ -33,46 +61,30 @@ def registro(request):
         {"form": form}
     )
 
+
 @login_required
-def publicar(request): 
+def publicar(request):
     if request.method == 'POST':
         form = RegisterPublicacionForm(request.POST, request.FILES)
 
         if form.is_valid():
             form.save(request.user)
 
-            return redirect(reverse('inicio')) # Redireccionar a la publicacion creada
+            # Redireccionar a la publicacion creada
+            return redirect(reverse('inicio'))
     else:
         form = RegisterPublicacionForm()
 
     return render(request, 'publicar.html', {"form": form})
+
 
 def publicacion(request):
     if request.method == 'GET':
         id = request.GET['id']
         publicacion = Publicacion.objects.get(pk=id)
 
-        comentarios = Comentario.objects.filter(publicacion=id)
+    return render(request, 'publicacion.html', {'publicacion': publicacion})
 
-        autores = Autor.objects.filter(publicacion=id)
-
-    return render(request, 'publicacion.html', {'publicacion': publicacion,
-                                                'comentarios': comentarios,
-                                                'autores': autores, })
-
-def filtrar(request):
-    if request.method == 'GET':
-        año = request.GET['año']
-        carrera = request.GET['carrera']
-
-        publicaciones = Publicaciones.filtrar(año,carrera)
-
-        #publicaciones = (Publicacion.objects
-            #.filter(año_creacion__year=f_año)
-            #.filter(carrera=f_carrera)
-            #.order_by('año_creacion'))
-
-    return render(request, 'inicio.html', {'publicaciones':publicaciones})
 
 @login_required
 def confirmar_email(request, uid, token):
@@ -82,6 +94,7 @@ def confirmar_email(request, uid, token):
         return redirect('perfil')
     else:
         return redirect('inicio')
+
 
 @login_required
 def actualizar_perfil_img(request):
@@ -97,18 +110,29 @@ def actualizar_perfil_img(request):
 
     return redirect(data.get('next', 'inicio'))
 
+
 @login_required
 def perfil(request):
     return render(request, 'cuentas/perfil.html')
+
+
+def perfil_publico(request, pk):
+    if not pk or pk == request.user.pk:
+        redirect(reverse('perfil'))
+
+    viewing = Usuario.objects.get(pk=pk)
+
+    return render(request, 'cuentas/perfil.html', {'user': viewing, 'public': True})
+
 
 @login_required
 def comentar(request):
     if request.method == 'POST':
         id = request.GET['id']
-        publicacion= Publicaciones.get(pk=id)
+        publicacion = Publicaciones.get(pk=id)
         form = RegisterComentarioForm(request.POST)
 
         if form.is_valid():
             form.save(id, request.user)
-            
+
     return redirect('publicacion')

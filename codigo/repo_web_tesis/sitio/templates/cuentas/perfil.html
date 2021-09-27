@@ -12,7 +12,11 @@
                 <MaterialUI.Grid container>
                     <MaterialUI.Grid xs={12} item>
                         <MaterialUI.Typography align='center' component='div'>
-                            <h2>Mi Perfil</h2>
+                            {% if public %}
+                                <h2>@{{ user.username }}</h2>
+                            {% else %}
+                                <h2>Mi Perfil</h2>
+                            {% endif %}
                         </MaterialUI.Typography>
 
                         <div style={ {maxWidth:125, margin: 'auto', marginBottom: 40} }>
@@ -23,44 +27,70 @@
                                 uploadto="{% url 'actualizar_foto' %}"
                                 next="perfil"
                                 src="{% if user.imagen %}{{ user.imagen.url }}{% endif %}"
+
+                                {% if public %}
+                                    readonly
+                                {% endif %}
                             ></ImageUploadForm>
                         </div>
 
                         <MaterialUI.Typography align='left' component='div'>
+                            {% if not public %}
                             <p style={ {paddingLeft: 10} }>
                                 Cuenta: <span style={ {fontWeight: 'bold'} }>@{{ user.username }}</span> <span>&lt;{{ user.email }}&gt; {% if not user.verified %} (<span style={ { color: 'red', fontWeight: 'bold' } }>NO VERIFICADO</span>) {% endif %}</span>
                             </p>
+                            {% endif %}
 
                             {% if not user.verified %}
                                 <p style={ { backgroundColor: 'rgb(255, 244, 229)', padding: '8px 18px' } }>
                                     <MaterialUI.Icon className="material-icons-outlined" style={ {color: '#ff9800', float: 'left', marginRight: 16} }>warning</MaterialUI.Icon>
+                                    {% if public %}
+                                    <span className="message" style={ {color: 'rgb(102, 60, 0)'} }>
+                                        Cuenta no verificada
+                                    </span>
+                                    {% else %}
                                     <span className="message" style={ {color: 'rgb(102, 60, 0)'} }>
                                         Las cuentas aún no verificadas no podrán realizar algunas acciones en el sitio y con el tiempo se darán de baja.
                                     </span>
+                                    {% endif %}
                                 </p>
                             {% else %}
                                 <p style={ { backgroundColor: 'rgb(237, 247, 237)', padding: '8px 18px' } }>
                                     <MaterialUI.Icon className="material-icons-outlined" style={ {color: '#4caf50', float: 'left', marginRight: 16} }>verified</MaterialUI.Icon>
+                                    {% if public %}
+                                    <span className="message">
+                                        Cuenta verificada
+                                    </span>
+                                    {% else %}
                                     <span className="message">
                                         ¡Genial! Tu cuenta está verificada
                                     </span>
+                                    {% endif %}
                                 </p>
                             {% endif %}
                         </MaterialUI.Typography>
                     </MaterialUI.Grid>
-                        
-                    <MaterialUI.Grid xs={12} md={10} item>
-                        <MaterialUI.Typography align='left' component='div' style={ { paddingTop: '0', paddingLeft: '.25em' } }>
-                            <a href="{% url 'password_change' %}" className="link clear-sides">Cambiar contraseña</a>
+                    
+                    {% if not public %}
+                        <MaterialUI.Grid xs={12} md={10} item>
+                            <MaterialUI.Typography align='left' component='div' style={ { paddingTop: '0', paddingLeft: '.25em' } }>
+                                <a href="{% url 'password_change' %}" className="link clear-sides">Cambiar contraseña</a>
 
-                            {% if user.is_superuser %}
-                                <a href="{% url 'admin:index' %}" className="link clear-sides">Administrar Sitio</a>
-                            {% endif %}
+                                {% if user.is_superuser %}
+                                    <a href="{% url 'admin:index' %}" className="link clear-sides">Administrar Sitio</a>
+                                {% endif %}
 
-                            <a href="{% url 'inicio' %}" className="link clear-sides">Ir al inicio</a>
-                            <a href="{% url 'logout' %}" className="link clear-sides" style={ {color: 'red'} }>Cerrar sesión</a>
-                        </MaterialUI.Typography>
-                    </MaterialUI.Grid>
+                                <a href="{% url 'inicio' %}" className="link clear-sides">Ir al inicio</a>
+                                <a href="{% url 'logout' %}" className="link clear-sides" style={ {color: 'red'} }>Cerrar sesión</a>
+                            </MaterialUI.Typography>
+                        </MaterialUI.Grid>
+                    {% else %}
+                        <MaterialUI.Grid xs={12} md={10} item>
+                                <MaterialUI.Typography align='left' component='div' style={ { paddingTop: '0', paddingLeft: '.25em' } }>
+                                    <a href="{% url 'inicio' %}" className="link clear-sides">Ir al inicio</a>
+                                </MaterialUI.Typography>
+                        </MaterialUI.Grid>
+                    {% endif %}
                 </MaterialUI.Grid>
             </MaterialUI.Paper>
         </MaterialUI.Grid>

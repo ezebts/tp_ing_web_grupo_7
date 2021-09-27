@@ -43,7 +43,7 @@ class FileInput extends React.Component {
     }
 
     render() {
-        const { name, accept } = this.props;
+        const { name, accept, required } = this.props;
 
         return (
             <MaterialUI.Box id={this.id}>

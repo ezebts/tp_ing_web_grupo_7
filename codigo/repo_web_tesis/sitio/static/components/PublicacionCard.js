@@ -45,25 +45,26 @@ class PublicacionCard extends React.Component {
     }
 
     render() {
-        const { classes, autores, titulo, fecha, resumen, resumenTitle, ver, imagen } = this.props;
+        const { classes, usuario, titulo, fecha, resumen, resumenTitle, ver, imagen } = this.props;
 
-        const autoresAvatars = [];
+        const usuarios = usuario ? [usuario] : [];
+        const usuariosAvatar = [];
 
         let key = 0;
-        for (const autor of (autores || [])) {
-            const splitted = autor.fields.full_name.split(' ');
 
-            const first = splitted[0].toUpperCase()[0];
-            const last = splitted[splitted.length - 1].toUpperCase()[0];
-            const style = { zIndex: (autores.length - key) + 1 };
+        for (const user of usuarios) {
+            const display = user.fields.username.toLowerCase();
+            const imagen = user.fields.imagen_url || null;
+
+            const style = { zIndex: (usuarios.length - key) + 1 };
 
             if (key > 0) {
                 style.marginLeft = '-12px';
             }
 
-            autoresAvatars.push(
-                <Avatar src={autor.image} style={style} key={key} aria-label={autor.name} alt={autor.name} className={classes.avatar}>
-                    {!autor.image ? `${first}${last}` : null}
+            usuariosAvatar.push(
+                <Avatar component={Link} key={key} href={usuario.fields.perfil_url} src={imagen} style={style} aria-label={'@' + display} alt={'@' + display} className={classes.avatar}>
+                    {!imagen ? `${display}` : null}
                 </Avatar>
             )
 
@@ -72,24 +73,24 @@ class PublicacionCard extends React.Component {
 
         let parsedAvatars = [];
 
-        if (autoresAvatars.length > 2) {
-            parsedAvatars.push(autoresAvatars[0]);
-            parsedAvatars.push(autoresAvatars[1]);
+        if (usuariosAvatar.length > 2) {
+            parsedAvatars.push(usuariosAvatar[0]);
+            parsedAvatars.push(usuariosAvatar[1]);
 
             parsedAvatars.push(
-                <Avatar style={{ zIndex: 1, marginLeft: '-12px' }} key={key + 1} aria-label='autores' alt='autores' className={classes.avatarPlus}>
-                    {`+${autoresAvatars.length - 2}`}
+                <Avatar style={{ zIndex: 1, marginLeft: '-12px' }} key={key + 1} aria-label='hay mas usuarios' alt='hay mas usuarios' className={classes.avatarPlus}>
+                    {`+${usuariosAvatar.length - 2}`}
                 </Avatar>
             );
         }
         else {
-            parsedAvatars = autoresAvatars;
+            parsedAvatars = usuariosAvatar;
         }
 
         return (
             <Card className={classes.root}>
                 {
-                    autores || titulo ?
+                    usuarios || titulo ?
                         <CardHeader
                             avatar={
                                 <div>
@@ -97,13 +98,17 @@ class PublicacionCard extends React.Component {
                                 </div>
                             }
                             action={
-                                autores ?
+                                usuarios ?
                                     <IconButton aria-label="settings">
                                         <Icon>more_vert</Icon>
                                     </IconButton> : null
                             }
                             {...(titulo ? { title: titulo } : {})}
-                            subheader={fecha}
+                            subheader={
+                                usuario && (<span>
+                                    <span>by <Link href={usuario && usuario.fields.perfil_url || ''}>{usuario && '@' + usuario.fields.username || ''}</Link></span> on <span>{fecha}</span>
+                                </span>)
+                            }
                         /> : null
                 }
                 <CardActionArea component={Link} href={ver}>
@@ -125,7 +130,7 @@ class PublicacionCard extends React.Component {
                     </CardContent>
                 </CardActionArea>
                 {
-                    autores ?
+                    usuarios ?
                         (<CardActions disableSpacing>
                             <IconButton aria-label="like">
                                 <Icon className="material-icons-outlined">thumb_up</Icon>

@@ -47,7 +47,7 @@ class RegisterPublicacionForm(ModelForm):
 
     class Meta:
         model = Publicacion
-        fields = ['titulo', 'resumen', 'imagen', 'archivo']
+        fields = ['titulo', 'resumen', 'imagen', 'carrera', 'archivo']
 
     def save(self, usuario, commit=True):
         pub_data = super().save(commit=False)

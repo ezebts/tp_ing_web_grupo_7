@@ -69,7 +69,7 @@ class ImageInput extends React.Component {
     }
 
     render() {
-        const { readonly, avatarProps, name } = this.props;
+        const { readonly, avatarProps, name, required } = this.props;
 
         const input = !readonly
             ? (<input name={name || 'imagen'} accept="image/*" onChange={this.displayPreview} style={{ display: 'none' }} type="file"></input>)
