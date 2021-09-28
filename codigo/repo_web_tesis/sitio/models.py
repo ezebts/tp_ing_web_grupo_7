@@ -38,7 +38,6 @@ class UsuarioSignals(Signal):
         if is_new:
             self.new.send(*args, **kwargs)
 
-
 class UsuarioManager(UserManager):
 
     def create_superuser(self, username, email=None, password=None, **extra_fields):
@@ -46,7 +45,6 @@ class UsuarioManager(UserManager):
         superuser.estado = ESTADOS_USUARIO.VERIFICADO
         superuser.save()
         return superuser
-
 
 class Publicaciones(models.Manager):
     def filtrar(self, año=None, carreras=[]):
@@ -62,20 +60,17 @@ class Publicaciones(models.Manager):
 
         return publicaciones.order_by('-fecha_publicacion')
 
-
 class Usuario(AbstractUser):
     """
     Usuario base del sitio
     """
 
     objects = UsuarioManager()
-
     on_created = UsuarioSignals()
 
     email = models.EmailField(blank=False, null=False, unique=True)
     estado = models.IntegerField(
         choices=namedtuple_choices(ESTADOS_USUARIO), default=ESTADOS_USUARIO.NO_VERIFICADO)
-
     imagen = models.ImageField(null=True, default=None)
 
     @property
@@ -96,6 +91,8 @@ class Usuario(AbstractUser):
     def send_email(self, subject, template, context={}):
         context['usuario'] = self
         helpers.send_email([self.email], subject, template, context=context)
+    
+        
 
     def save(self, *args, creation=False, **kwargs):
         """
@@ -110,7 +107,6 @@ class Usuario(AbstractUser):
         self.on_created.send(sender=self.__class__,
                              is_new=is_new, usuario=self)
 
-
 class Autor(models.Model):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=30)
@@ -124,7 +120,6 @@ class Autor(models.Model):
 
     def __str__(self):
         return self.full_name
-
 
 class Publicacion(models.Model):
 
@@ -156,7 +151,6 @@ class Publicacion(models.Model):
     def año_publicacion(self):
         return self.fecha_publicacion.strftime("%Y")
 
-
 class Comentario(models.Model):
     usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
     texto = models.TextField(max_length=1000)
@@ -164,10 +158,9 @@ class Comentario(models.Model):
     fecha_creacion = models.DateField(default=timezone.now)
     publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE)
 
-
 class Seguimiento(models.Model):
-    usuario = models.ForeignKey(
+    usuario_id = models.ForeignKey(
         'Usuario', related_name="siguiendo", on_delete=DO_NOTHING)
-    usuario_siguiendo = models.ForeignKey(
+    usuario_siguiendo_id = models.ForeignKey(
         'Usuario', related_name="seguidores", on_delete=DO_NOTHING)
     fecha_seguimiento = models.DateField(auto_now_add=True)

@@ -70,7 +70,6 @@ def publicar(request):
         if form.is_valid():
             form.save(request.user)
 
-            # Redireccionar a la publicacion creada
             return redirect(reverse('inicio'))
     else:
         form = RegisterPublicacionForm()
@@ -82,6 +81,8 @@ def publicacion(request):
     if request.method == 'GET':
         id = request.GET['id']
         publicacion = Publicacion.objects.get(pk=id)
+
+        # Logica para comentar usando el ModelForm
 
     return render(request, 'publicacion.html', {'publicacion': publicacion})
 
@@ -125,14 +126,4 @@ def perfil_publico(request, pk):
     return render(request, 'cuentas/perfil.html', {'user': viewing, 'public': True})
 
 
-@login_required
-def comentar(request):
-    if request.method == 'POST':
-        id = request.GET['id']
-        publicacion = Publicaciones.get(pk=id)
-        form = RegisterComentarioForm(request.POST)
 
-        if form.is_valid():
-            form.save(id, request.user)
-
-    return redirect('publicacion')
