@@ -38,6 +38,7 @@ class UsuarioSignals(Signal):
         if is_new:
             self.new.send(*args, **kwargs)
 
+
 class UsuarioManager(UserManager):
 
     def create_superuser(self, username, email=None, password=None, **extra_fields):
@@ -45,6 +46,7 @@ class UsuarioManager(UserManager):
         superuser.estado = ESTADOS_USUARIO.VERIFICADO
         superuser.save()
         return superuser
+
 
 class Publicaciones(models.Manager):
     def filtrar(self, año=None, carreras=[]):
@@ -59,6 +61,7 @@ class Publicaciones(models.Manager):
             publicaciones = publicaciones.filter(carrera__in=carreras)
 
         return publicaciones.order_by('-fecha_publicacion')
+
 
 class Usuario(AbstractUser):
     """
@@ -91,8 +94,6 @@ class Usuario(AbstractUser):
     def send_email(self, subject, template, context={}):
         context['usuario'] = self
         helpers.send_email([self.email], subject, template, context=context)
-    
-        
 
     def save(self, *args, creation=False, **kwargs):
         """
@@ -107,6 +108,7 @@ class Usuario(AbstractUser):
         self.on_created.send(sender=self.__class__,
                              is_new=is_new, usuario=self)
 
+
 class Autor(models.Model):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=30)
@@ -120,6 +122,7 @@ class Autor(models.Model):
 
     def __str__(self):
         return self.full_name
+
 
 class Publicacion(models.Model):
 
@@ -151,12 +154,19 @@ class Publicacion(models.Model):
     def año_publicacion(self):
         return self.fecha_publicacion.strftime("%Y")
 
+    def registrar_visita(self, usuario):
+        if usuario.pk != self.usuario.pk:
+            self.vistas += 1
+            self.save()
+
+
 class Comentario(models.Model):
     usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
     texto = models.TextField(max_length=1000)
     archivo = models.FileField(upload_to='', blank=True)
     fecha_creacion = models.DateField(default=timezone.now)
     publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE)
+
 
 class Seguimiento(models.Model):
     usuario_id = models.ForeignKey(

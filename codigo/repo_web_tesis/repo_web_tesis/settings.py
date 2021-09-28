@@ -35,6 +35,9 @@ DEBUG = True
 HOST = 'http://127.0.0.1:8000/'
 ALLOWED_HOSTS = ['testserver', '*']
 
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+XS_SHARING_ALLOWED_METHODS = ['GET']
+
 AUTHENTICATION_BACKENDS = [
     'sitio.backends.UsuarioAuthBackend'
 ]

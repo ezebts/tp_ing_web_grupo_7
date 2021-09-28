@@ -78,13 +78,21 @@ def publicar(request):
 
 
 def publicacion(request):
+    publicacion = None
+    carreras = dict(carrera for carrera in CARRERAS)
+
     if request.method == 'GET':
         id = request.GET['id']
+
         publicacion = Publicacion.objects.get(pk=id)
 
-        # Logica para comentar usando el ModelForm
+        if publicacion:
+            publicacion.registrar_visita(request.user)
 
-    return render(request, 'publicacion.html', {'publicacion': publicacion})
+    if not publicacion:
+        return redirect(reverse('inicio'))
+
+    return render(request, 'publicacion.html', {'publicacion': publicacion, 'carreras': carreras})
 
 
 @login_required
@@ -124,6 +132,3 @@ def perfil_publico(request, pk):
     viewing = Usuario.objects.get(pk=pk)
 
     return render(request, 'cuentas/perfil.html', {'user': viewing, 'public': True})
-
-
-

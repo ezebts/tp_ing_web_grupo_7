@@ -1,21 +1,83 @@
 {% extends "base.html" %}
+{% load utils %}
 
 {% block title %} Publicacion {% endblock %}
 
 {% block content %}
+    <MaterialUI.Grid container>
+            <MaterialUI.Grid xs={12} md={3} item></MaterialUI.Grid>
 
-    <h1>Títitulo: "{{publicacion.titulo}}" {% for a in publicacion.autores.all %} <h1>Por:{{a.nombre}} {{a.apellido}}</h1> {% endfor %}</h1>
+            <MaterialUI.Grid xs={12} md={6} style={ { marginBottom: 10 + 'em', marginTop: 10 + 'em', zIndex: '1', paddingLeft: 5 + '%', paddingRight: 5 + '%' } } item>
+                <MaterialUI.Paper elevation={3} style={ { padding: '2em 2em' } } className="panel rounded">
+                    <MaterialUI.Grid container>
+                        <MaterialUI.Grid xs={12} item>
+                            <MaterialUI.Typography align='center' component='div'>
+                                <h2>{{ publicacion.titulo }}</h2>
+                            </MaterialUI.Typography>
+                        </MaterialUI.Grid>
 
-    <p>Resumen: {{publicacion.resumen}}</p>
-    <p>Fecha de subida: {{publicacion.fecha_creacion}}</p>
+                        <MaterialUI.Grid xs={12} item>
+                            <p id="publicacion">Published on {{ publicacion.fecha_publicacion }}</p>
 
+                            <div>
+                                <MaterialUI.Chip style={ { marginRight: '15px' } } label="{{ carreras|get_key:publicacion.carrera }}" variant="outlined" />
+                                <MaterialUI.Chip
+                                    icon={
+                                        <MaterialUI.Icon>visibility</MaterialUI.Icon>
+                                    }
+                                    label="{{ publicacion.vistas }}" variant="outlined"/>
+                            </div>
 
-    <h1>Comentarios</h1>
-    {% for com in publicacion.comentarios.all %}
+                            <div style={ { marginBottom: '10px' } }>
+                                <MaterialUI.IconButton aria-label="like" variant="outlined">
+                                    <MaterialUI.Icon className="material-icons-outlined">thumb_up</MaterialUI.Icon>
+                                </MaterialUI.IconButton>
 
-        <p>{{com.texto}}</p>
+                                <MaterialUI.IconButton aria-label="share" variant="outlined">
+                                    <MaterialUI.Icon className="material-icons-outlined">share</MaterialUI.Icon>
+                                </MaterialUI.IconButton>
+                            </div>
 
-    {% endfor %}
+                            
+                            {% if publicacion.imagen %}
+                            <div style={ { marginBottom: '30px' } }>
+                                <img src="{{ publicacion.imagen.url }}" style={  { width: '100%', maxHeight: '300px', display: 'block' } }></img>
+                            </div>
+                            
+                            <div>
+                            {% if publicacion.archivo %}
+                                <embed src="{{ publicacion.archivo.url }}" width="100%" height="100%" type="application/pdf"/>
+                            {% endif %}
+                            </div>
+                            {% endif %}
 
+                            <MaterialUI.Button
+                                href="{{ publicacion.archivo.url }}"
+                                variant="outlined"
+                            >
+                                Descargar Documento
+                            </MaterialUI.Button>
+                            
+                            <div>{{ publicacion.resumen|linebreaks }}</div>
+                        </MaterialUI.Grid>
+                        
+                        <MaterialUI.Grid xs={12} md={10} item>
+                            <MaterialUI.Typography align='left' component='div' style={ { paddingTop: '0', paddingLeft: '.25em' } }>
+                                <MaterialUI.Button
+                                variant="outlined"
+                                href="{% url 'inicio' %}"
+                                color='primary'
+                                >
+                                    Volver al inicio
+                                </MaterialUI.Button>
+                            </MaterialUI.Typography>
+                        </MaterialUI.Grid>
+                    </MaterialUI.Grid>
+                </MaterialUI.Paper>
+            </MaterialUI.Grid>
 
+            <GoUpButton anchor="#publicacion"></GoUpButton>
+
+            <MaterialUI.Grid xs={12} md={3} item></MaterialUI.Grid>
+        </MaterialUI.Grid>
 {% endblock %}
