@@ -69,13 +69,11 @@ class Usuario(AbstractUser):
     """
 
     objects = UsuarioManager()
-
     on_created = UsuarioSignals()
 
     email = models.EmailField(blank=False, null=False, unique=True)
     estado = models.IntegerField(
         choices=namedtuple_choices(ESTADOS_USUARIO), default=ESTADOS_USUARIO.NO_VERIFICADO)
-
     imagen = models.ImageField(null=True, default=None)
 
     @property
@@ -156,6 +154,11 @@ class Publicacion(models.Model):
     def año_publicacion(self):
         return self.fecha_publicacion.strftime("%Y")
 
+    def registrar_visita(self, usuario):
+        if usuario.pk != self.usuario.pk:
+            self.vistas += 1
+            self.save()
+
 
 class Comentario(models.Model):
     usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
@@ -166,8 +169,8 @@ class Comentario(models.Model):
 
 
 class Seguimiento(models.Model):
-    usuario = models.ForeignKey(
+    usuario_id = models.ForeignKey(
         'Usuario', related_name="siguiendo", on_delete=DO_NOTHING)
-    usuario_siguiendo = models.ForeignKey(
+    usuario_siguiendo_id = models.ForeignKey(
         'Usuario', related_name="seguidores", on_delete=DO_NOTHING)
     fecha_seguimiento = models.DateField(auto_now_add=True)
