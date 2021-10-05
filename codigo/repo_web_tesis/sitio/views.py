@@ -131,4 +131,7 @@ def perfil_publico(request, pk):
 
     viewing = Usuario.objects.get(pk=pk)
 
+    if request.POST and request.POST['action'] == 'seguir':
+        request.user.seguir(viewing)
+
     return render(request, 'cuentas/perfil.html', {'user': viewing, 'public': True})

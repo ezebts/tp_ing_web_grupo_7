@@ -91,6 +91,35 @@ class Usuario(AbstractUser):
     def verified(self):
         return self.estado == ESTADOS_USUARIO.VERIFICADO
 
+    @property
+    def siguiendo(self):
+        siguiendo=[]
+        for sig in self.u_siguiendo.all():
+            siguiendo.append(sig.usuario_siguiendo)
+
+        return siguiendo
+    
+    @property
+    def seguidores(self):
+        seguidores=[]
+        for sig in self.u_seguidores.all():
+            seguidores.append(sig.usuario)
+        
+        return seguidores
+
+    def seguir(self, usuario_perfil):
+        '''
+        Self es el usuario logueado en el sitio,
+        Usuario_perfil es el usuario del cual
+        estamos visitando el perfil, luego
+        al que queremos seguir
+        '''
+        seguimiento = Seguimiento()
+        seguimiento.usuario=self
+        seguimiento.usuario_siguiendo=usuario_perfil    
+
+        seguimiento.save()    
+
     def send_email(self, subject, template, context={}):
         context['usuario'] = self
         helpers.send_email([self.email], subject, template, context=context)
@@ -169,8 +198,10 @@ class Comentario(models.Model):
 
 
 class Seguimiento(models.Model):
-    usuario_id = models.ForeignKey(
-        'Usuario', related_name="siguiendo", on_delete=DO_NOTHING)
-    usuario_siguiendo_id = models.ForeignKey(
-        'Usuario', related_name="seguidores", on_delete=DO_NOTHING)
+    usuario = models.ForeignKey(
+        Usuario, related_name="u_siguiendo", on_delete=DO_NOTHING)
+    usuario_siguiendo = models.ForeignKey(
+        Usuario, related_name="u_seguidores", on_delete=DO_NOTHING)
     fecha_seguimiento = models.DateField(auto_now_add=True)
+
+
