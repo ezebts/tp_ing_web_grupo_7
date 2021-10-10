@@ -30,6 +30,7 @@ urlpatterns = [
 
     # Sitio urls
     path('', views.inicio, name='inicio'),
+    path('search/', include('haystack.urls')),
     path('perfil', views.perfil, name='perfil'),
     path('perfil/<str:pk>', views.perfil_publico, name='perfil_publico'),
     path('perfil/actualizar-foto/',
