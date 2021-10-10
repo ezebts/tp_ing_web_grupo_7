@@ -69,8 +69,11 @@ def publicar(request):
 
         if form.is_valid():
             form.save(request.user)
+            tit = request.POST.get("titulo")
 
-            return redirect(reverse('inicio'))
+            publicacion = Publicacion.objects.filter(titulo__icontains=tit).first()
+
+            return render(request, 'publicacion.html', {'publicacion': publicacion})
     else:
         form = RegisterPublicacionForm()
 
