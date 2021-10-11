@@ -165,7 +165,7 @@ class Publicacion(models.Model):
 
     estado = models.CharField(
         max_length=200, choices=ESTADOS_PUBLICACION, default='en_revision')
-    usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
+    usuario = models.ForeignKey(Usuario, on_delete=DO_NOTHING, related_name='publicaciones')
     autores = models.ManyToManyField(Autor)
     fecha_creacion = models.DateField(default=timezone.now)
     fecha_publicacion = models.DateField(default=timezone.now)
@@ -190,11 +190,13 @@ class Publicacion(models.Model):
 
 
 class Comentario(models.Model):
-    usuario = models.ForeignKey('Usuario', on_delete=DO_NOTHING)
+    usuario = models.ForeignKey(Usuario, on_delete=DO_NOTHING, related_name='comentarios')
     texto = models.TextField(max_length=1000)
     archivo = models.FileField(upload_to='', blank=True)
     fecha_creacion = models.DateField(default=timezone.now)
-    publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE)
+    publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE, related_name='comentarios')
+
+    
 
 
 class Seguimiento(models.Model):
