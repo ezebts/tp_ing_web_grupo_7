@@ -7,14 +7,19 @@
     <MaterialUI.Grid container>
             <MaterialUI.Grid xs={12} md={3} item></MaterialUI.Grid>
 
-            <MaterialUI.Grid xs={12} md={6} style={ { marginBottom: 10 + 'em', marginTop: 10 + 'em', zIndex: '1', paddingLeft: 5 + '%', paddingRight: 5 + '%' } } item>
+            <MaterialUI.Grid xs={12} md={6} style={ { marginBottom: 10 + 'em', marginTop: 10 + 'em', paddingLeft: 4 + '%', paddingRight: 4 + '%' } } item>
                 <MaterialUI.Paper elevation={3} style={ { padding: '2em 2em' } } className="panel rounded">
                     <MaterialUI.Grid container>
+                        <MaterialUI.Grid xs={12} md={10} item>
+                            
+                        </MaterialUI.Grid>
+
                         <MaterialUI.Grid xs={12} item>
                             <MaterialUI.Typography align='center' component='div'>
                                 <h2>{{ publicacion.titulo }}</h2>
                             </MaterialUI.Typography>
                         </MaterialUI.Grid>
+                        
 
                         <MaterialUI.Grid xs={12} item>
                             <p id="publicacion">Published on {{ publicacion.fecha_publicacion }}</p>
@@ -37,6 +42,16 @@
                                     <MaterialUI.Icon className="material-icons-outlined">share</MaterialUI.Icon>
                                 </MaterialUI.IconButton>
                             </div>
+
+                            <MaterialUI.Typography align='left' component='div' style={ { paddingTop: '0', paddingLeft: '.25em', marginBottom: '15px' } }>
+                                <MaterialUI.Button
+                                variant="outlined"
+                                href="{% url 'inicio' %}"
+                                color='primary'
+                                >
+                                   Volver al inicio
+                                </MaterialUI.Button>
+                            </MaterialUI.Typography>
 
                             
                             {% if publicacion.imagen %}
@@ -63,24 +78,24 @@
                             
                             <div>{{ publicacion.resumen|linebreaks }}</div>
                         </MaterialUI.Grid>
-                        
-                        <MaterialUI.Grid xs={12} md={10} item>
-                            <MaterialUI.Typography align='left' component='div' style={ { paddingTop: '0', paddingLeft: '.25em' } }>
-                                <MaterialUI.Button
-                                variant="outlined"
-                                href="{% url 'inicio' %}"
-                                color='primary'
-                                >
-                                    Volver al inicio
-                                </MaterialUI.Button>
-                            </MaterialUI.Typography>
+                    </MaterialUI.Grid>
+                </MaterialUI.Paper>
+
+                <MaterialUI.Paper elevation={3} style={ { padding: '2em 2em', marginTop: '20px', paddingBottom: '16px' } } className="panel rounded">
+                    <MaterialUI.Grid container>
+                        <MaterialUI.Grid xs={12} item>
+                            <ComentaryBox 
+                                {% if user.is_authenticated %} user={ {{ user|json }} } {% endif %}
+                                getUrl="{% url 'api_publicaciones_comentarios' pk=publicacion.id %}" 
+                                postUrl="{% url 'api_publicaciones_nuevo_comentarios' pk=publicacion.id %}"
+                            />
                         </MaterialUI.Grid>
                     </MaterialUI.Grid>
                 </MaterialUI.Paper>
             </MaterialUI.Grid>
 
-            <GoUpButton anchor="#publicacion"></GoUpButton>
-
-            <MaterialUI.Grid xs={12} md={3} item></MaterialUI.Grid>
+            <MaterialUI.Grid xs={12} md={3} item>
+                <GoUpButton style={ { right: '-20px' } } anchor="#publicacion"></GoUpButton>
+            </MaterialUI.Grid>
         </MaterialUI.Grid>
 {% endblock %}

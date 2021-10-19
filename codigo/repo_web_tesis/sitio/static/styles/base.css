@@ -113,6 +113,7 @@ ul {
 	background:#024959;
 	color:#fff;
     background-color: #0a66c2!important;
+    z-index: 99999;
 }
 
 .btn-subir > * {

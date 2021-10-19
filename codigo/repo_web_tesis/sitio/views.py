@@ -1,12 +1,16 @@
+import json
+
 from django.contrib.auth import login
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.http import HttpResponse
 
 from sitio.models import Usuario, Publicacion, CARRERAS
 from sitio.errors import EmailNotAllowedError
 from sitio.forms import RegisterPublicacionForm, RegisterUserForm, UserChangeImageForm, RegisterComentarioForm
 from sitio.services import verify_usuario
+from sitio.serializers import ModelJsonSerializer
 
 
 def inicio(request):
@@ -71,7 +75,8 @@ def publicar(request):
             form.save(request.user)
             tit = request.POST.get("titulo")
 
-            publicacion = Publicacion.objects.filter(titulo__icontains=tit).first()
+            publicacion = Publicacion.objects.filter(
+                titulo__icontains=tit).first()
 
             return render(request, 'publicacion.html', {'publicacion': publicacion})
     else:
@@ -138,3 +143,51 @@ def perfil_publico(request, pk):
         request.user.seguir(viewing)
 
     return render(request, 'cuentas/perfil.html', {'user': viewing, 'public': True})
+
+
+def comentarios(request, pk):
+    if request.method == 'GET' and request.is_ajax():
+        comentarios = []
+        padre_id = request.GET.get('padre_id') or None
+        publicacion = Publicacion.objects.get(pk=pk)
+
+        if publicacion:
+            comentarios = publicacion.get_comentarios(padre_id=padre_id)
+
+        response = HttpResponse(ModelJsonSerializer().serialize(
+            comentarios, ignored_props=['publicacion']))
+
+        response['Content-Type'] = 'application/json'
+
+        return response
+
+    return redirect(reversed('inicio'))
+
+
+@login_required
+def crear_comentario(request, pk):
+    if request.method == 'POST' and request.is_ajax():
+        publicacion = Publicacion.objects.get(pk=pk)
+
+        if publicacion:
+            body = json.loads(request.body)
+            comentario = body.get('texto', None)
+            padre_id = body.get('padre_id') or None
+            responde_id = body.get('responde_id') or None
+
+            if comentario:
+                responde = publicacion.get_comentario(
+                    responde_id) if responde_id else None
+
+                padre = publicacion.get_comentario(
+                    padre_id) if padre_id else None
+
+                publicacion.comentar(
+                    request.user, comentario, padre=padre, responde=responde)
+
+            response = HttpResponse("Ok")
+            response['Content-Type'] = 'application/json'
+
+            return response
+
+    return redirect(reversed('inicio'))

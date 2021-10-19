@@ -39,6 +39,10 @@ urlpatterns = [
     path('repositorio/publicar', views.publicar, name='publicar'),
     path('repositorio/publicacion', views.publicacion, name='publicacion'),
     path('registro/confirmar-email/<uid>/<token>',
-         views.confirmar_email, name='confirmar_email')
+         views.confirmar_email, name='confirmar_email'),
+
+    # Api endpoints
+    path('api/publicaciones/<str:pk>/comentarios', views.comentarios, name='api_publicaciones_comentarios'),
+    path('api/publicaciones/<str:pk>/nuevo-comentarios', views.crear_comentario, name='api_publicaciones_nuevo_comentarios')
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

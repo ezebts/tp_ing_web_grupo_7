@@ -8,6 +8,8 @@ django = "*"
 autopep8 = "*"
 pylint = "*"
 pillow = "*"
+django-haystack = "*"
+whoosh = "*"
 
 [dev-packages]
 
