@@ -23,8 +23,13 @@
         <!-- Importar react y dependencias relacionadas -->
         {% include_react %}
         <!---->
+        
+        <!-- Registrar utilidades a usar-->
+        <script type="text/babel" src="{% static 'utils/view.js' %}"></script>
+        <script type="text/babel" src="{% static 'utils/gateway.js' %}"></script>
 
         <!-- Registrar componentes a usar-->
+        <script type="text/babel" src="{% static 'components/ConnectedComponent.js' %}"></script>
         <script type="text/babel" src="{% static 'components/PasswordInput.js' %}"></script>
         <script type="text/babel" src="{% static 'components/ImageInput.js' %}"></script>
         <script type="text/babel" src="{% static 'components/FileInput.js' %}"></script>
@@ -33,6 +38,7 @@
         <script type="text/babel" src="{% static 'components/GoUpButton.js' %}"></script>
         <script type="text/babel" src="{% static 'components/ApplicationBar.js' %}"></script>
         <script type="text/babel" src="{% static 'components/MultiSelectInput.js' %}"></script>
+        <script type="text/babel" src="{% static 'components/ComentaryBox.js' %}"></script>
         
         {% block scripts %}{% endblock %}
         <!---->

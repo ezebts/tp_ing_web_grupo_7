@@ -93,18 +93,18 @@ class Usuario(AbstractUser):
 
     @property
     def siguiendo(self):
-        siguiendo=[]
+        siguiendo = []
         for sig in self.u_siguiendo.all():
             siguiendo.append(sig.usuario_siguiendo)
 
         return siguiendo
-    
+
     @property
     def seguidores(self):
-        seguidores=[]
+        seguidores = []
         for sig in self.u_seguidores.all():
             seguidores.append(sig.usuario)
-        
+
         return seguidores
 
     def seguir(self, usuario_perfil):
@@ -115,10 +115,10 @@ class Usuario(AbstractUser):
         al que queremos seguir
         '''
         seguimiento = Seguimiento()
-        seguimiento.usuario=self
-        seguimiento.usuario_siguiendo=usuario_perfil    
+        seguimiento.usuario = self
+        seguimiento.usuario_siguiendo = usuario_perfil
 
-        seguimiento.save()    
+        seguimiento.save()
 
     def send_email(self, subject, template, context={}):
         context['usuario'] = self
@@ -165,7 +165,8 @@ class Publicacion(models.Model):
 
     estado = models.CharField(
         max_length=200, choices=ESTADOS_PUBLICACION, default='en_revision')
-    usuario = models.ForeignKey(Usuario, on_delete=DO_NOTHING, related_name='publicaciones')
+    usuario = models.ForeignKey(
+        Usuario, on_delete=DO_NOTHING, related_name='publicaciones')
     autores = models.ManyToManyField(Autor)
     fecha_creacion = models.DateField(default=timezone.now)
     fecha_publicacion = models.DateField(default=timezone.now)
@@ -188,15 +189,50 @@ class Publicacion(models.Model):
             self.vistas += 1
             self.save()
 
+    def get_comentarios(self, padre_id=None):
+        return (
+            Comentario.objects
+            .filter(publicacion__pk=self.pk, padre__pk=padre_id)
+            .order_by('fecha_creacion')
+        )
+
+    def get_comentario(self, comentario_id):
+        return self.comentarios.get(pk=comentario_id)
+
+    def comentar(self, usuario, comentario, padre=None, revision=None, responde=None):
+        comentario = Comentario(
+            usuario=usuario,
+            texto=comentario,
+            archivo=revision,
+            fecha_creacion=timezone.now(),
+            publicacion=self,
+            padre=padre,
+            responde=responde
+        )
+
+        comentario.save()
+
 
 class Comentario(models.Model):
-    usuario = models.ForeignKey(Usuario, on_delete=DO_NOTHING, related_name='comentarios')
+    usuario = models.ForeignKey(
+        Usuario, on_delete=DO_NOTHING, related_name='comentarios')
     texto = models.TextField(max_length=1000)
     archivo = models.FileField(upload_to='', blank=True)
-    fecha_creacion = models.DateField(default=timezone.now)
-    publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE, related_name='comentarios')
+    fecha_creacion = models.DateTimeField(default=timezone.now)
+    publicacion = models.ForeignKey(
+        Publicacion, on_delete=CASCADE, related_name='comentarios')
+    padre = models.ForeignKey(
+        'Comentario', on_delete=CASCADE, related_name='comentarios', null=True)
+    responde = models.ForeignKey(
+        'Comentario', on_delete=CASCADE, related_name='respuestas', null=True)
 
-    
+    @property
+    def responde_a_comentario(self):
+        return self.responde
+
+    @property
+    def autor(self):
+        return self.usuario
 
 
 class Seguimiento(models.Model):
@@ -205,5 +241,3 @@ class Seguimiento(models.Model):
     usuario_siguiendo = models.ForeignKey(
         Usuario, related_name="u_seguidores", on_delete=DO_NOTHING)
     fecha_seguimiento = models.DateField(auto_now_add=True)
-
-
