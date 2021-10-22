@@ -25,7 +25,7 @@ def inicio(request):
         filtro_carrera_req = request.GET.get('filtro_carreras', '')
 
         carreras_mapping = dict([(carrera[1], carrera[0])
-                                for carrera in CARRERAS])
+                                 for carrera in CARRERAS])
 
         filtro_carreras = [carreras_mapping[str(filtro).strip(
         )] for filtro in filtro_carrera_req.split(',') if filtro]
@@ -78,6 +78,21 @@ def publicar(request):
         form = RegisterPublicacionForm()
 
     return render(request, 'publicar.html', {"form": form})
+
+
+@login_required
+def editar_publicacion(request, pk):
+    publicacion = Publicacion.objects.get(id=pk)
+    form = RegisterPublicacionForm(instance=publicacion)
+
+    if request.method == 'POST':
+
+        form = RegisterPublicacionForm(request.POST, instance=publicacion)
+        if form.is_valid():
+            form.save(request.user)
+            return redirect('/')
+    context = {'form': form}
+    return render(request, 'publicar.html', context)
 
 
 def publicacion(request):

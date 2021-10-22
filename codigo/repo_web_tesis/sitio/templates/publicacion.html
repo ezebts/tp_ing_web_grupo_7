@@ -74,6 +74,17 @@
                                     Volver al inicio
                                 </MaterialUI.Button>
                             </MaterialUI.Typography>
+                            {% if request.user.is_authenticated %}
+                                {% if user.id == publicacion.usuario.id %}
+                                    <MaterialUI.Button
+                                        variant="outlined"
+                                        href="{% url 'editar_publicacion' publicacion.id %}"
+                                        color='primary'
+                                        >
+                                        Editar Publicación
+                                    </MaterialUI.Button>
+                                {% endif %}
+                            {% endif %}
                         </MaterialUI.Grid>
                     </MaterialUI.Grid>
                 </MaterialUI.Paper>
