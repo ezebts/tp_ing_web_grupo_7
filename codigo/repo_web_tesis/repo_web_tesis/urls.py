@@ -37,6 +37,7 @@ urlpatterns = [
          views.actualizar_perfil_img, name='actualizar_foto'),
     path("registro/", views.registro, name="registro"),
     path('repositorio/publicar', views.publicar, name='publicar'),
+    path('editar_publicacion/<str:pk>/', views.editar_publicacion, name='editar_publicacion'),
     path('repositorio/publicacion', views.publicacion, name='publicacion'),
     path('registro/confirmar-email/<uid>/<token>',
          views.confirmar_email, name='confirmar_email'),

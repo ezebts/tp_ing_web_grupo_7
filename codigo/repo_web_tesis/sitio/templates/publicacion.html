@@ -78,17 +78,28 @@
                             
                             <div>{{ publicacion.resumen|linebreaks }}</div>
                         </MaterialUI.Grid>
-                    </MaterialUI.Grid>
-                </MaterialUI.Paper>
-
-                <MaterialUI.Paper elevation={3} style={ { padding: '2em 2em', marginTop: '20px', paddingBottom: '16px' } } className="panel rounded">
-                    <MaterialUI.Grid container>
-                        <MaterialUI.Grid xs={12} item>
-                            <ComentaryBox 
-                                {% if user.is_authenticated %} user={ {{ user|json }} } {% endif %}
-                                getUrl="{% url 'api_publicaciones_comentarios' pk=publicacion.id %}" 
-                                postUrl="{% url 'api_publicaciones_nuevo_comentarios' pk=publicacion.id %}"
-                            />
+                        
+                        <MaterialUI.Grid xs={12} md={10} item>
+                            <MaterialUI.Typography align='left' component='div' style={ { paddingTop: '0', paddingLeft: '.25em' } }>
+                                <MaterialUI.Button
+                                variant="outlined"
+                                href="{% url 'inicio' %}"
+                                color='primary'
+                                >
+                                    Volver al inicio
+                                </MaterialUI.Button>
+                            </MaterialUI.Typography>
+                            {% if request.user.is_authenticated %}
+                                {% if user.id == publicacion.usuario.id %}
+                                    <MaterialUI.Button
+                                        variant="outlined"
+                                        href="{% url 'editar_publicacion' publicacion.id %}"
+                                        color='primary'
+                                        >
+                                        Editar Publicación
+                                    </MaterialUI.Button>
+                                {% endif %}
+                            {% endif %}
                         </MaterialUI.Grid>
                     </MaterialUI.Grid>
                 </MaterialUI.Paper>
