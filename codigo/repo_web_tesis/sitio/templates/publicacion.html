@@ -13,6 +13,11 @@
                         <MaterialUI.Grid xs={12} item>
                             <MaterialUI.Typography align='center' component='div'>
                                 <h2>{{ publicacion.titulo }}</h2>
+                                <h4>
+                                    {% for autor in publicacion.autores.all %}
+                                        {{autor}}{{','}}
+                                    {% endfor %}
+                                </h4>
                             </MaterialUI.Typography>
                         </MaterialUI.Grid>
 
