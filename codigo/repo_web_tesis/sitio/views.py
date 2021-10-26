@@ -320,3 +320,7 @@ def usuario_seguidos(request, pk):
         return response
 
     return redirect(reversed('inicio'))
+
+
+def robots_txt(request):
+    return render(request, 'robots.txt')
