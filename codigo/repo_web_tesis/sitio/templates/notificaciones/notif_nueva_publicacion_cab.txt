@@ -1,0 +1,1 @@
+{{ notificacion.publicacion.usuario.username }} publicó algo que podría interesarte

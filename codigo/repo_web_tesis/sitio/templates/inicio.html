@@ -75,8 +75,8 @@
                     <MaterialUI.Grid id="publicaciones-filtro" container className="gridContainer">
                         <MaterialUI.Grid xs={12} item className="gridItem">
                             <form method="GET" action="/">
-                                <MaterialUI.Grid container>
-                                    <MaterialUI.Grid xs={12} md={3} style={ {marginRight: '20px'} } item className="gridItem">
+                                <MaterialUI.Grid container style={ { marginTop: '20px' } }>
+                                    <MaterialUI.Grid xs={12} sm={12} md={3} style={ {marginRight: '20px'} } item className="gridItem">
                                         <MaterialUI.TextField
                                         name="filtro_anio"
                                         label="Filtrar Año"
@@ -94,7 +94,7 @@
                                         variant="outlined"
                                         />
                                     </MaterialUI.Grid>
-                                    <MaterialUI.Grid xs={9} md={6} item className="gridItem">
+                                    <MaterialUI.Grid xs={12} sm={9} md={6} item className="gridItem">
                                         <MultiSelectInput
                                             label="Filtrar por carrera..."
                                             className='stretch'
@@ -104,7 +104,7 @@
                                             options={ {{ carreras|json }} }
                                         ></MultiSelectInput>
                                     </MaterialUI.Grid>
-                                    <MaterialUI.Grid xs={3} md={2} item className="gridItem" style={ { marginBottom: '2.5em' } }>
+                                    <MaterialUI.Grid xs={12} sm={3} md={2} item className="gridItem" style={ { marginBottom: '2.5em' } }>
                                         <MaterialUI.Button name="action" role="submit" type="submit" value="FILTRAR" variant="outlined" style={ { marginTop:'10px', marginLeft: '15px' } }>FILTRAR</MaterialUI.Button>
                                     </MaterialUI.Grid>
                                 </MaterialUI.Grid>
@@ -114,7 +114,7 @@
                 {% endif %}
 
                 <MaterialUI.Grid container className="gridContainer">
-                    {% if publicaciones.count %}
+                    {% if publicaciones %}
                         {% for publicacion in publicaciones %}
                             <MaterialUI.Grid xs={12} item style={ { marginBottom: '2.5em' } }>
                                 <PublicacionCard

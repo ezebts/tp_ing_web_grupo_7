@@ -43,8 +43,8 @@ class GoUpButton extends React.Component {
 
     render() {
         return (
-            <ScrollTrigger {...this.props}>
-                <MaterialUI.Fab className="btn-subir" color="secondary" size="medium" aria-label="scroll back to top">
+            <ScrollTrigger anchor={this.props.anchor}>
+                <MaterialUI.Fab {...this.props} className="btn-subir" color="secondary" size="medium" aria-label="scroll back to top">
                     <MaterialUI.Icon>expand_less</MaterialUI.Icon>
                 </MaterialUI.Fab>
             </ScrollTrigger>

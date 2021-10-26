@@ -1,0 +1,1 @@
+{{ notificacion.comentario.usuario.username }} respondió a un comentario tuyo en "{{ notificacion.comentario.publicacion.titulo }}"

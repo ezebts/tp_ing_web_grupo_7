@@ -185,6 +185,29 @@ ALLOWED_EMAIL_DOMAINS = [
     allowed_email_domain('ucse.edu.ar')
 ]
 
+NOTIFICACIONES_BASE = 'notificaciones'
+
+NOTIFICACIONES = {
+    'PUBL_NUEVO_COMENTARIO': {
+        'mensaje': f'{NOTIFICACIONES_BASE}/notif_publ_comentario.txt',
+        'cabecera': f'{NOTIFICACIONES_BASE}/notif_publ_nuevo_comentario_cab.txt'
+    },
+
+    'PUBL_RESP_COMENTARIO': {
+        'mensaje': f'{NOTIFICACIONES_BASE}/notif_publ_comentario.txt',
+        'cabecera': f'{NOTIFICACIONES_BASE}/notif_publ_resp_comentario_cab.txt'
+    },
+
+    'NUEVO_SEGUIDOR': {
+        'mensaje': f'{NOTIFICACIONES_BASE}/notif_nuevo_seguidor.txt',
+        'cabecera': None
+    },
+
+    'NUEVA_PUBLICACION': {
+        'mensaje': f'{NOTIFICACIONES_BASE}/notif_nueva_publicacion.txt',
+        'cabecera': f'{NOTIFICACIONES_BASE}/notif_nueva_publicacion_cab.txt'
+    }
+}
 
 # Load local configuration
 try:
