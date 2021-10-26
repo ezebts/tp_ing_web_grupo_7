@@ -62,4 +62,6 @@ urlpatterns = [
     path('api/usuarios/<str:pk>/publicaciones',
          views.usuario_publicaciones, name='api_usuarios_publicaciones'),
 
+    path('robots.txt', views.robots_txt)
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
