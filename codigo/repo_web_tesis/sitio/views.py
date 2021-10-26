@@ -35,10 +35,12 @@ def inicio(request):
         )] for filtro in filtro_carrera_req.split(',') if filtro]
 
         publicaciones = Publicacion.objects.filtrar(
+            usuario=request.user if request.user.is_authenticated else None,
             año=año, carreras=filtro_carreras)
 
         view_filtro = [
-            filtro for filtro in filtro_carrera_req.split(',') if filtro]
+            filtro for filtro in filtro_carrera_req.split(',') if filtro
+        ]
 
         context = {'publicaciones': publicaciones, 'carreras': CARRERAS,
                    'filtro_carreras': view_filtro, 'filtro_anio': año, 'action': action}
@@ -204,5 +206,117 @@ def crear_comentario(request, pk):
             response['Content-Type'] = 'application/json'
 
             return response
+
+    return redirect(reversed('inicio'))
+
+
+@login_required
+def get_usuario_notificaciones(request):
+    if request.method == 'GET' and request.is_ajax():
+        notificaciones = request.user.get_notificaciones()
+
+        response = HttpResponse(ModelJsonSerializer().serialize(
+            notificaciones, ignored_props=['usuario']))
+
+        response['Content-Type'] = 'application/json'
+
+        return response
+
+    return redirect(reversed('inicio'))
+
+
+@login_required
+def update_usuario_notificacion(request, pk):
+    if request.method == 'POST' and request.is_ajax():
+        notificacion = request.user.get_notificacion(pk)
+
+        if notificacion:
+            body = json.loads(request.body)
+
+            if body.get('vista'):
+                notificacion.marcar_como_vista()
+
+            response = HttpResponse("Ok")
+            response['Content-Type'] = 'application/json'
+
+            return response
+
+    return redirect(reversed('inicio'))
+
+
+@login_required
+def create_usuario_seguidor(request, pk):
+    if request.method == 'POST' and request.is_ajax():
+        usuario = Usuario.objects.get(pk=pk)
+
+        if usuario:
+            request.user.seguir(usuario)
+            response = HttpResponse("Ok")
+            response['Content-Type'] = 'application/json'
+
+            return response
+
+    return redirect(reversed('inicio'))
+
+
+@login_required
+def delete_usuario_seguidor(request, pk):
+    if request.method == 'POST' and request.is_ajax():
+        usuario = Usuario.objects.get(pk=pk)
+
+        if usuario:
+            request.user.dejar_de_seguir(usuario)
+            response = HttpResponse("Ok")
+            response['Content-Type'] = 'application/json'
+
+            return response
+
+    return redirect(reversed('inicio'))
+
+
+def usuario_publicaciones(request, pk):
+    if request.method == 'GET':
+        publicaciones = Publicacion.objects.filter(usuario__id=pk)
+
+        response = HttpResponse(ModelJsonSerializer().serialize(
+            publicaciones, ignored_props=['usuario']))
+
+        response['Content-Type'] = 'application/json'
+
+        return response
+
+    return redirect(reversed('inicio'))
+
+
+def usuario_seguidores(request, pk):
+    if request.method == 'GET':
+        usuario = Usuario.objects.get(pk=pk)
+
+        if usuario:
+            response = HttpResponse(ModelJsonSerializer().serialize(
+                usuario.get_seguidores(), fields=['username', 'perfil_url', 'imagen_url']))
+        else:
+            response = HttpResponse('Not Found', status=404)
+
+        response['Content-Type'] = 'application/json'
+
+        return response
+
+    return redirect(reversed('inicio'))
+
+
+def usuario_seguidos(request, pk):
+    if request.method == 'GET':
+        usuario = Usuario.objects.get(pk=pk)
+
+        if usuario:
+            response = HttpResponse(ModelJsonSerializer().serialize(
+                usuario.get_siguiendo(), fields=['username', 'perfil_url', 'imagen_url']))
+        else:
+            response = HttpResponse('Not Found', status=404)
+
+        response['Content-Type'] = 'application/json'
+
+        return response
 
     return redirect(reversed('inicio'))

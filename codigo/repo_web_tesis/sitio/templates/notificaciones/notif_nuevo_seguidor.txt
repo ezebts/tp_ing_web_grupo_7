@@ -1,0 +1,1 @@
+{{ notificacion.seguimiento.usuario.username }} comenzó a seguirte

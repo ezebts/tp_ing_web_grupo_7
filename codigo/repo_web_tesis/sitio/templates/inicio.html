@@ -114,7 +114,7 @@
                 {% endif %}
 
                 <MaterialUI.Grid container className="gridContainer">
-                    {% if publicaciones.count %}
+                    {% if publicaciones %}
                         {% for publicacion in publicaciones %}
                             <MaterialUI.Grid xs={12} item style={ { marginBottom: '2.5em' } }>
                                 <PublicacionCard

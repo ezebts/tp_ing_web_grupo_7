@@ -1,0 +1,1 @@
+{{ notificacion.comentario.usuario.username }} comentó en tu publicación "{{ notificacion.comentario.publicacion.titulo }}"

@@ -37,13 +37,29 @@ urlpatterns = [
          views.actualizar_perfil_img, name='actualizar_foto'),
     path("registro/", views.registro, name="registro"),
     path('repositorio/publicar', views.publicar, name='publicar'),
-    path('editar_publicacion/<str:pk>/', views.editar_publicacion, name='editar_publicacion'),
+    path('editar_publicacion/<str:pk>/',
+         views.editar_publicacion, name='editar_publicacion'),
     path('repositorio/publicacion', views.publicacion, name='publicacion'),
     path('registro/confirmar-email/<uid>/<token>',
          views.confirmar_email, name='confirmar_email'),
 
     # Api endpoints
-    path('api/publicaciones/<str:pk>/comentarios', views.comentarios, name='api_publicaciones_comentarios'),
-    path('api/publicaciones/<str:pk>/nuevo-comentarios', views.crear_comentario, name='api_publicaciones_nuevo_comentarios')
+    path('api/publicaciones/<str:pk>/comentarios',
+         views.comentarios, name='api_publicaciones_comentarios'),
+
+    path('api/publicaciones/<str:pk>/nuevo-comentarios',
+         views.crear_comentario, name='api_publicaciones_nuevo_comentarios'),
+
+    path('api/usuarios/notificaciones',
+         views.get_usuario_notificaciones, name='api_get_notificaciones_usuario'),
+
+    path('api/usuarios/notificaciones/<str:pk>',
+         views.update_usuario_notificacion, name='api_update_notificacion_usuario'),
+
+    path('api/usuarios/<str:pk>/seguidores',
+         views.create_usuario_seguidor, name='api_seguir_usuario'),
+
+    path('api/usuarios/<str:pk>/publicaciones',
+         views.usuario_publicaciones, name='api_usuarios_publicaciones'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

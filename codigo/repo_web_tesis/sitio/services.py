@@ -2,7 +2,9 @@ from django.conf import settings
 from django.dispatch import receiver
 from django.shortcuts import reverse
 
-from sitio.models import Usuario, ESTADOS_USUARIO
+from sitio.models import Usuario, ESTADOS_USUARIO, Comentario, Seguimiento, Publicacion,\
+    NotificacionNuevoComentario, NotificacionNuevaPublicacion, NotificacionNuevoSeguidor
+
 from sitio.errors import EmailNotAllowedError, UserBannedError
 from sitio.security import token_factory
 
@@ -79,3 +81,26 @@ def verify_usuario(usuario, sign, token):
 
     return usuario
 
+
+@receiver(Comentario.on_created)
+def notificar_comentario_usuario(comentario, **kwargs):
+    comentario.usuario.notificar(
+        NotificacionNuevoComentario(comentario=comentario)
+    )
+
+
+@receiver(Seguimiento.on_created)
+def notificar_nuevo_seguidor_usuario(seguimiento, **kwargs):
+    seguimiento.usuario.notificar(
+        NotificacionNuevoSeguidor(seguimiento=seguimiento)
+    )
+
+
+@receiver(Publicacion.on_created)
+def notificar_nueva_publicacion_usuario(publicacion, **kwargs):
+    seguidores = publicacion.usuario.seguidores
+
+    for seguidor in seguidores:
+        seguidor.notificar(
+            NotificacionNuevaPublicacion(publicacion=publicacion)
+        )
