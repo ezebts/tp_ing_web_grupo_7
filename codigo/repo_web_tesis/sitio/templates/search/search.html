@@ -22,7 +22,7 @@
             <h3>Resultados:</h3>
 
             {% for result in page.object_list %}
-                <a href = "{% url 'publicacion' %}?id={{result.id|urlencode}}">{{ result.titulo }}, {{ result.carrera }}</a>
+                <a href = "{% url 'publicacion' %}?id={{result.pk}}">{{ result.titulo }}, {{ result.carrera }}</a>
             {% empty %}
                 <p>No se encontraron noticias.</p>
             {% endfor %}
