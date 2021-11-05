@@ -147,7 +147,8 @@ def actualizar_perfil_img(request):
 
 @login_required
 def perfil(request):
-    return render(request, 'cuentas/perfil.html')
+    publicaciones = Publicacion.objects.all().filter(usuario__id=request.user.id)
+    return render(request, 'cuentas/perfil.html', { 'publicaciones': publicaciones })
 
 
 def perfil_publico(request, pk):
@@ -156,10 +157,26 @@ def perfil_publico(request, pk):
 
     viewing = Usuario.objects.get(pk=pk)
 
+    if not viewing:
+        return redirect(reverse('inicio'))
+
     if request.POST and request.POST['action'] == 'seguir':
         request.user.seguir(viewing)
+    
+    viewer = None
+    if request.user:
+        viewer = request.user
 
-    return render(request, 'cuentas/perfil.html', {'user': viewing, 'public': True})
+    publicaciones = Publicacion.objects.all().filter(usuario__id=viewing.id)
+    
+    context = {
+        'public': True,
+        'user': viewing,
+        'viewer': viewer,
+        'publicaciones': publicaciones
+    }
+
+    return render(request, 'cuentas/perfil.html', context)
 
 
 def comentarios(request, pk):
@@ -243,29 +260,38 @@ def update_usuario_notificacion(request, pk):
 
     return redirect(reversed('inicio'))
 
-
 @login_required
-def create_usuario_seguidor(request, pk):
-    if request.method == 'POST' and request.is_ajax():
+def get_usuario_seguidor(request, pk, seguidor_pk):
+    if request.method == 'GET' and request.is_ajax():
         usuario = Usuario.objects.get(pk=pk)
 
         if usuario:
-            request.user.seguir(usuario)
-            response = HttpResponse("Ok")
+            seguidores = usuario.get_seguidores(pk=seguidor_pk)
+
+            if seguidores:
+                response = HttpResponse(
+                    ModelJsonSerializer().serialize(seguidores))
+            else:
+                response = HttpResponse(status=404)
+            
             response['Content-Type'] = 'application/json'
 
             return response
 
     return redirect(reversed('inicio'))
 
-
 @login_required
-def delete_usuario_seguidor(request, pk):
+def create_usuario_seguidor(request, pk):
     if request.method == 'POST' and request.is_ajax():
         usuario = Usuario.objects.get(pk=pk)
+        seguimiento = json.loads(request.body)
 
-        if usuario:
-            request.user.dejar_de_seguir(usuario)
+        if usuario and seguimiento:
+            if seguimiento.get('seguir'):
+                request.user.seguir(usuario)
+            else:
+                request.user.dejar_de_seguir(usuario)
+                
             response = HttpResponse("Ok")
             response['Content-Type'] = 'application/json'
 

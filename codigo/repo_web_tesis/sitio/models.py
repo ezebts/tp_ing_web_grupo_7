@@ -121,9 +121,12 @@ class Usuario(AbstractUser):
             seguimiento.usuario_siguiendo for seguimiento in query
         ]
 
-    def get_seguidores(self):
+    def get_seguidores(self, pk=None):
         query = self.u_seguidores.all().order_by(
             'usuario__username', '-fecha_seguimiento')
+        
+        if pk:
+            query = query.filter(usuario__id=pk)
 
         return [
             seguimiento.usuario for seguimiento in query
@@ -136,7 +139,7 @@ class Usuario(AbstractUser):
         estamos visitando el perfil, luego
         al que queremos seguir
         '''
-        if not self.u_siguiendo.filter(id=usuario_perfil.pk).exists():
+        if not self.u_siguiendo.filter(id=usuario_perfil.id).exists():
             seguimiento = Seguimiento()
             seguimiento.usuario = self
             seguimiento.usuario_siguiendo = usuario_perfil
@@ -144,9 +147,9 @@ class Usuario(AbstractUser):
             seguimiento.save()
 
     def dejar_de_seguir(self, usuario):
-        seguimiento = self.u_siguiendo.get(usuario_siguiendo__id=usuario.pk)
-        if seguimiento:
-            seguimiento.delete()
+        seguimientos = self.u_siguiendo.all().filter(usuario_siguiendo__id=usuario.pk)
+        if seguimientos:
+            seguimientos.delete()
 
     def notificar(self, notificacion):
         notificacion.usuario = self
@@ -159,9 +162,9 @@ class Usuario(AbstractUser):
     def get_notificacion_exact(self, notificacion):
         result = notificacion
 
-        nuev_com = getattr(notificacion, 'notificacion_nuevo_comentario')
-        nuev_seg = getattr(notificacion, 'notificacion_nuevo_seguidor')
-        nuev_publ = getattr(notificacion, 'notificacion_nueva_publicacion')
+        nuev_com = getattr(notificacion, 'notificacionnuevocomentario', None)
+        nuev_seg = getattr(notificacion, 'notificacionnuevoseguidor', None)
+        nuev_publ = getattr(notificacion, 'notificacionnuevapublicacion', None)
 
         if nuev_com:
             result = nuev_com
@@ -323,9 +326,9 @@ class Comentario(models.Model):
 
 class Seguimiento(models.Model):
     usuario = models.ForeignKey(
-        Usuario, related_name="u_seguidores", on_delete=DO_NOTHING)
-    usuario_siguiendo = models.ForeignKey(
         Usuario, related_name="u_siguiendo", on_delete=DO_NOTHING)
+    usuario_siguiendo = models.ForeignKey(
+        Usuario, related_name="u_seguidores", on_delete=DO_NOTHING)
     fecha_seguimiento = models.DateField(auto_now_add=True)
 
     on_created = Signal()
@@ -409,6 +412,14 @@ class NotificacionNuevoComentario(Notificacion):
             config = self.alt_notification_resp_settings
 
         return config
+    
+    @property
+    def cabecera(self):
+        return super().cabecera
+    
+    @property
+    def mensaje(self):
+        return super().mensaje
 
     @property
     def link(self):
@@ -422,11 +433,27 @@ class NotificacionNuevoSeguidor(Notificacion):
     @property
     def link(self):
         return self.seguimiento.usuario.perfil_url
+    
+    @property
+    def cabecera(self):
+        return super().cabecera
+    
+    @property
+    def mensaje(self):
+        return super().mensaje
 
 
 class NotificacionNuevaPublicacion(Notificacion):
     notificacion_settings = 'NUEVA_PUBLICACION'
     publicacion = models.ForeignKey(Publicacion, on_delete=CASCADE)
+
+    @property
+    def cabecera(self):
+        return super().cabecera
+    
+    @property
+    def mensaje(self):
+        return super().mensaje
 
     @property
     def link(self):

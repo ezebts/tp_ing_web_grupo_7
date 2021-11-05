@@ -105,9 +105,9 @@ class PublicacionCard extends React.Component {
                             }
                             {...(titulo ? { title: titulo } : {})}
                             subheader={
-                                usuario && (<span>
+                                usuario ? (<span>
                                     <span>by <Link href={usuario && usuario.fields.perfil_url || ''}>{usuario && '@' + usuario.fields.username || ''}</Link></span> on <span>{fecha}</span>
-                                </span>)
+                                </span>) : (<span>on {fecha}</span>)
                             }
                         /> : null
                 }
@@ -130,7 +130,7 @@ class PublicacionCard extends React.Component {
                     </CardContent>
                 </CardActionArea>
                 {
-                    usuarios ?
+                    usuarios.length ?
                         (<CardActions disableSpacing>
                             <IconButton aria-label="like">
                                 <Icon className="material-icons-outlined">thumb_up</Icon>

@@ -58,9 +58,18 @@ urlpatterns = [
 
     path('api/usuarios/<str:pk>/seguidores',
          views.create_usuario_seguidor, name='api_seguir_usuario'),
+     
+     path('api/usuarios/<str:pk>/seguidores/<str:seguidor_pk>',
+         views.get_usuario_seguidor, name='api_get_seguidor_usuario'),
 
     path('api/usuarios/<str:pk>/publicaciones',
          views.usuario_publicaciones, name='api_usuarios_publicaciones'),
+
+     path('api/usuarios/<str:pk>/gseguidores',
+         views.usuario_seguidores, name='api_get_usuario_seguidores'),
+     
+     path('api/usuarios/<str:pk>/seguidos',
+         views.usuario_seguidos, name='api_get_usuario_seguidos'),
 
     path('robots.txt', views.robots_txt)
 
