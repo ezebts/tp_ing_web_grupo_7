@@ -76,3 +76,26 @@ class UserChangeImageForm(ModelForm):
     class Meta:
         model = Usuario
         fields = ('imagen',)
+
+class RevisionForm(ModelForm):
+    class Meta:
+        model = Comentario
+        fields = ('archivo',)
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        archivo = self.fields.get('archivo')
+
+        if archivo:
+            archivo.widget.attrs['accept'] = 'application/pdf'
+    
+    def save(self, usuario, publicacion):
+        comentario = super().save(commit=False)
+
+        if comentario and comentario.archivo:
+            comentario.publicacion = publicacion
+            comentario.usuario = usuario
+            comentario.texto = f'Revisión de "{publicacion.titulo}" por { usuario.username }'
+            comentario.save()
+
+        return comentario

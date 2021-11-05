@@ -8,7 +8,7 @@ from django.http import HttpResponse
 
 from sitio.models import Usuario, Publicacion, CARRERAS
 from sitio.errors import EmailNotAllowedError
-from sitio.forms import RegisterPublicacionForm, RegisterUserForm, UserChangeImageForm, RegisterComentarioForm
+from sitio.forms import RegisterPublicacionForm, RegisterUserForm, UserChangeImageForm, RegisterComentarioForm, RevisionForm
 from sitio.services import verify_usuario
 from sitio.serializers import ModelJsonSerializer
 
@@ -103,21 +103,32 @@ def editar_publicacion(request, pk):
 
 
 def publicacion(request):
+    revision = None
     publicacion = None
     carreras = dict(carrera for carrera in CARRERAS)
 
-    if request.method == 'GET':
+    if request.method == 'GET' or request.method == 'POST':
         id = request.GET['id']
+
+        if request.user.is_authenticated:
+            revision = RevisionForm()
 
         publicacion = Publicacion.objects.get(pk=id)
 
         if publicacion:
+            revisiones = publicacion.get_revisiones()
             publicacion.registrar_visita(request.user)
+    
+    if publicacion and request.method == 'POST' and request.user.is_authenticated:
+        revision = RevisionForm(request.POST, request.FILES)
+
+        if revision.is_valid():
+            revision.save(request.user, publicacion)
 
     if not publicacion:
         return redirect(reverse('inicio'))
-
-    return render(request, 'publicacion.html', {'publicacion': publicacion, 'carreras': carreras})
+    
+    return render(request, 'publicacion.html', {'publicacion': publicacion, 'carreras': carreras, 'revisiones': revisiones, 'form': revision})
 
 
 @login_required

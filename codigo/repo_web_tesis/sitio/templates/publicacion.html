@@ -79,14 +79,13 @@
                             <div style={ { marginBottom: '30px' } }>
                                 <img src="{{ publicacion.imagen.url }}" style={  { width: '100%', maxHeight: '300px', display: 'block' } }></img>
                             </div>
+                            {% endif %}
                             
                             <div style={ { height: '600px' } }>
                             {% if publicacion.archivo %}
                                 <embed src="{{ publicacion.archivo.url }}" width="100%" height="100%" type="application/pdf" />
                             {% endif %}
                             </div>
-                            
-                            {% endif %}
 
                             <MaterialUI.Button
                                 component={MaterialUI.Link}
@@ -96,6 +95,27 @@
                             >
                                 Descargar Documento
                             </MaterialUI.Button>
+
+                                {% if revisiones %}
+                                    {% for revision in revisiones %}
+                                        {% if revision.archivo %}
+                                        <div style={ { marginTop: '30px', marginBottom: '30px' } }>
+                                            <p style={ { fontWeight: 'bold', marginBottom: '10px' } }>————. {{ revision.texto }} el {{ revision.fecha_creacion }} .————</p>
+                                            <p></p>
+                                            <embed src="{{ revision.archivo.url }}" width="100%" height="auto" style={ { minHeight: '300px' } } type="application/pdf" />
+                                            <MaterialUI.Button
+                                                component={MaterialUI.Link}
+                                                download="{{ publicacion.titulo }}_revision_{{ revision.usuario.username }}__{{ revision.fecha_creacion }}"
+                                                href="{{ revision.archivo.url }}"
+                                                variant="outlined"
+                                            >
+                                                Descargar Revisión
+                                            </MaterialUI.Button>
+                                            <p> </p>
+                                        </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
                             
                             <div>{{ publicacion.resumen|linebreaks }}</div>
                         </MaterialUI.Grid>
@@ -105,6 +125,12 @@
                 <MaterialUI.Paper elevation={3} style={ { padding: '2em 2em', marginTop: '20px', paddingBottom: '16px' } } className="panel rounded">
                     <MaterialUI.Grid container>
                         <MaterialUI.Grid xs={12} item>
+                            <ToggleViewButton text="Realizar una revisión" style={ { marginBottom: '15px' } }>
+                                <MaterialUI.Box style={ {padding: '15px'} }>
+                                    {% include 'forms/form.html' with submit="Enviar Revisión" method="POST" %}
+                                </MaterialUI.Box>
+                            </ToggleViewButton>
+
                             <ComentaryBox 
                                 {% if user.is_authenticated %} user={ {{ user|json }} } {% endif %}
                                 getUrl="{% url 'api_publicaciones_comentarios' pk=publicacion.id %}" 
