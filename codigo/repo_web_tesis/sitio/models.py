@@ -263,12 +263,16 @@ class Publicacion(models.Model):
     def get_comentarios(self, padre_id=None):
         return (
             Comentario.objects
-            .filter(publicacion__pk=self.pk, padre__pk=padre_id)
+            .filter(publicacion__pk=self.pk, padre__pk=padre_id, archivo='')
             .order_by('fecha_creacion')
         )
 
     def get_comentario(self, comentario_id):
         return self.comentarios.get(pk=comentario_id)
+    
+    def get_revisiones(self):
+        revisiones = self.comentarios.all().filter(~models.Q(archivo='')).order_by('fecha_creacion')
+        return revisiones
 
     def comentar(self, usuario, comentario, padre=None, revision=None, responde=None):
         comentario = Comentario(
@@ -314,6 +318,13 @@ class Comentario(models.Model):
     @ property
     def autor(self):
         return self.usuario
+
+    @property
+    def link_archivo(self):
+        if self.archivo:
+            return self.archivo.url
+        else:
+            return None
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
