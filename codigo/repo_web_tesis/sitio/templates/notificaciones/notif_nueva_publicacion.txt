@@ -1,1 +1,1 @@
-"{{ notificacion.publicacion.titulo }}"
+— "{{ notificacion.publicacion.titulo }}"

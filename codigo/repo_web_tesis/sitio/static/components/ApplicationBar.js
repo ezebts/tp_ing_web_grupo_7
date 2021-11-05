@@ -31,10 +31,10 @@ class ApplicationBar extends React.Component {
     }
 
     render() {
-        const { classes, user, title, loginLink, profileLink } = this.props;
+        const { classes, user, title, loginLink, profileLink, notifications } = this.props;
 
         const loginButton = user
-            ? null
+            ? (<NotificationsButton {...(notifications || {})}></NotificationsButton>)
             : (
                 <Button className={classes.loginButton} color="inherit" href={loginLink}>
                     <Icon style={{ marginRight: '6px' }}>login</Icon>
@@ -49,7 +49,9 @@ class ApplicationBar extends React.Component {
                         {title}
                     </Typography>
 
-                    {loginButton}
+                    <div style={{ marginRight: '35%' }}>
+                        {loginButton}
+                    </div>
 
                     <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
                         <Icon>menu</Icon>

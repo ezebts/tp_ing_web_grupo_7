@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load utils %}
 
 {% block title %}Mi Perfil{% endblock %}
 
@@ -32,6 +33,17 @@
                                     readonly
                                 {% endif %}
                             ></ImageUploadForm>
+
+                            {% if public %}
+                                {% if viewer.id != user.id %}
+
+                                    <FollowUserButton 
+                                        getUrl="{% url 'api_get_seguidor_usuario' pk=user.id seguidor_pk=viewer.id %}" 
+                                        postUrl="{% url 'api_seguir_usuario' pk=user.id %}"
+                                    />
+
+                                {% endif %}
+                            {% endif %}
                         </div>
 
                         <MaterialUI.Typography align='left' component='div'>
@@ -70,6 +82,18 @@
                             {% endif %}
                         </MaterialUI.Typography>
                     </MaterialUI.Grid>
+
+                    <MaterialUI.Grid xs={12} item>
+                            <SeguidoresButton
+                                seguidores={ true }
+                                getUrl="{% url 'api_get_usuario_seguidores' pk=user.id %}"
+                            />
+
+                            <SeguidoresButton
+                                seguidores={ false }
+                                getUrl="{% url 'api_get_usuario_seguidos' pk=user.id %}"
+                            />
+                    </MaterialUI.Grid>
                     
                     {% if not public %}
                         <MaterialUI.Grid xs={12} md={10} item>
@@ -91,6 +115,27 @@
                                 </MaterialUI.Typography>
                         </MaterialUI.Grid>
                     {% endif %}
+
+                    <MaterialUI.Grid xs={12} md={10} item>
+                        {% if publicaciones %}
+                            {% if viewer and user.id != viewer.id %}
+                                <h1>Publicaciones de {{ user.username }}</h1>
+                            {% else %}
+                                <h1>Publicaciones</h1>
+                            {% endif %}
+                            {% for publicacion in publicaciones %}
+                                <MaterialUI.Grid xs={12} item style={ { marginBottom: '2.5em' } }>
+                                    <PublicacionCard
+                                        titulo="{{ publicacion.titulo }}"
+                                        fecha="{{ publicacion.fecha_creacion }}"
+                                        resumen="{{ publicacion.resumen }}"
+                                        ver="{% url 'publicacion' %}?id={{publicacion.id|urlencode}}"
+                                        imagen="{% if publicacion.imagen %}{{ publicacion.imagen.url }}{% endif %}"
+                                    ></PublicacionCard>
+                                </MaterialUI.Grid>
+                            {% endfor %}
+                        {% endif %}
+                    </MaterialUI.Grid>
                 </MaterialUI.Grid>
             </MaterialUI.Paper>
         </MaterialUI.Grid>

@@ -84,21 +84,27 @@ def verify_usuario(usuario, sign, token):
 
 @receiver(Comentario.on_created)
 def notificar_comentario_usuario(comentario, **kwargs):
-    comentario.usuario.notificar(
-        NotificacionNuevoComentario(comentario=comentario)
-    )
+    notificacion = NotificacionNuevoComentario(comentario=comentario)
+
+    if comentario.responde:
+        if comentario.responde.usuario.id != comentario.publicacion.usuario.id:
+            comentario.publicacion.usuario.notificar(notificacion)
+         
+        comentario.responde.usuario.notificar(notificacion)
+    else:
+        comentario.publicacion.usuario.notificar(notificacion)
 
 
 @receiver(Seguimiento.on_created)
 def notificar_nuevo_seguidor_usuario(seguimiento, **kwargs):
-    seguimiento.usuario.notificar(
+    seguimiento.usuario_siguiendo.notificar(
         NotificacionNuevoSeguidor(seguimiento=seguimiento)
     )
 
 
 @receiver(Publicacion.on_created)
 def notificar_nueva_publicacion_usuario(publicacion, **kwargs):
-    seguidores = publicacion.usuario.seguidores
+    seguidores = publicacion.usuario.get_seguidores()
 
     for seguidor in seguidores:
         seguidor.notificar(

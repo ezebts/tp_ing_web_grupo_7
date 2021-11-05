@@ -1,1 +1,1 @@
-{{ notificacion.comentario.texto }}
+— "{{ notificacion.comentario.texto }}"

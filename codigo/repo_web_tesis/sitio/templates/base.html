@@ -36,16 +36,29 @@
         <script type="text/babel" src="{% static 'components/ImageUploadForm.js' %}"></script>
         <script type="text/babel" src="{% static 'components/PublicacionCard.js' %}"></script>
         <script type="text/babel" src="{% static 'components/GoUpButton.js' %}"></script>
-        <script type="text/babel" src="{% static 'components/ApplicationBar.js' %}"></script>
         <script type="text/babel" src="{% static 'components/MultiSelectInput.js' %}"></script>
         <script type="text/babel" src="{% static 'components/ComentaryBox.js' %}"></script>
+        <script type="text/babel" src="{% static 'components/FollowUserButton.js' %}"></script>
+        <script type="text/babel" src="{% static 'components/NotificationList.js' %}"></script>
+        <script type="text/babel" src="{% static 'components/NotificationsButton.js' %}"></script>
+        <script type="text/babel" src="{% static 'components/SeguidoresList.js' %}"></script>
+        <script type="text/babel" src="{% static 'components/SeguidoresButton.js' %}"></script>
+
+        <script type="text/babel" src="{% static 'components/ApplicationBar.js' %}"></script>
         
         {% block scripts %}{% endblock %}
         <!---->
 
         <!-- Contenedor de la app -->
         <script id='content' type="text/template">
-            <ApplicationBar {% if user.is_authenticated %} user={ {{ user|json }} } {% endif %} title="UCSE Investigación" loginLink="{% url 'login' %}"></ApplicationBar>
+            <ApplicationBar 
+                {% if user.is_authenticated %} user={ {{ user|json }} } {% endif %} 
+                title="UCSE Investigación" 
+                loginLink="{% url 'login' %}"
+                notifications={ {
+                    getUrl: "{% url 'api_get_notificaciones_usuario' %}" 
+                } }
+            ></ApplicationBar>
             
             <MaterialUI.Box>
                 {% block content %}{%endblock%}

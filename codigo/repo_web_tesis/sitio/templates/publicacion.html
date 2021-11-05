@@ -22,6 +22,10 @@
                                         {{autor}}{{','}}
                                     {% endfor %}
                                 </h4>
+                                <MaterialUI.Typography component="span">
+                                    <p style={ {marginBottom:8} }><span style={ { fontWeight: 'bold' } }> Subido por @{{ publicacion.usuario.username }}</span></p>
+                                </MaterialUI.Typography>
+
                             </MaterialUI.Typography>
                         </MaterialUI.Grid>
                         
